@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StickerAlbi - Envío</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Source+Sans+3:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#ffdad6",
+                      "trophy-gold": "#FFF200",
+                      "surface-container": "#ecedf8",
+                      "on-background": "#181b23",
+                      "primary-container": "#27ae60",
+                      "surface-dim": "#d8d9e4",
+                      "clean-white": "#FFFFFF",
+                      "secondary": "#735c00",
+                      "surface": "#f9f9ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#eec209",
+                      "background": "#f9f9ff",
+                      "surface-bright": "#f9f9ff",
+                      "on-tertiary-container": "#690000",
+                      "on-primary-fixed-variant": "#005228",
+                      "surface-container-high": "#e6e8f2",
+                      "tertiary-fixed-dim": "#ffb4a8",
+                      "surface-container-low": "#f2f3fe",
+                      "secondary-fixed": "#ffe084",
+                      "primary-fixed-dim": "#61de8a",
+                      "on-primary-container": "#00391a",
+                      "inverse-surface": "#2d3038",
+                      "primary": "#006d37",
+                      "secondary-container": "#fed023",
+                      "on-surface-variant": "#3d4a3f",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e0e2ed",
+                      "surface-tint": "#006d37",
+                      "pitch-green": "#0D6B48",
+                      "surface-variant": "#e0e2ed",
+                      "on-surface": "#181b23",
+                      "inverse-primary": "#61de8a",
+                      "outline": "#6d7a6e",
+                      "outline-variant": "#bccabc",
+                      "tertiary-fixed": "#ffdad4",
+                      "on-secondary-container": "#6f5900",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#231b00",
+                      "on-error": "#ffffff",
+                      "action-orange": "#E67E22",
+                      "on-tertiary-fixed": "#410000",
+                      "error": "#ba1a1a",
+                      "tertiary": "#c00001",
+                      "inverse-on-surface": "#eff0fb",
+                      "on-tertiary-fixed-variant": "#930001",
+                      "on-primary-fixed": "#00210c",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#ff6753",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#574500",
+                      "primary-fixed": "#7efba4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "max-width": "1280px",
+                      "unit": "4px",
+                      "margin-desktop": "64px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-xl": [
+                              "Lexend"
+                      ],
+                      "price-display": [
+                              "Lexend"
+                      ],
+                      "body-lg": [
+                              "Source Sans 3"
+                      ],
+                      "headline-md": [
+                              "Lexend"
+                      ],
+                      "body-md": [
+                              "Source Sans 3"
+                      ],
+                      "label-bold": [
+                              "Lexend"
+                      ],
+                      "headline-lg-mobile": [
+                              "Lexend"
+                      ],
+                      "headline-lg": [
+                              "Lexend"
+                      ]
+              },
+              "fontSize": {
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "price-display": [
+                              "24px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-bold": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #f9f9ff;
+            color: #181b23;
+        }
+        .sticker-shadow {
+            box-shadow: 4px 4px 0px #181b23;
+        }
+        .sticker-border {
+            border: 2px solid #181b23;
+        }
+        .input-focus:focus {
+            border-color: #006d37;
+            border-width: 2px;
+            outline: none;
+            box-shadow: none;
+        }
+        
+        /* Stepper Styles */
+        .step-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-family: 'Lexend', sans-serif;
+            border: 2px solid #181b23;
+            background-color: #fff;
+            color: #181b23;
+            z-index: 10;
+        }
+        .step-active .step-icon {
+            background-color: #FFF200; /* trophy-gold */
+            box-shadow: 2px 2px 0px #181b23;
+        }
+        .step-completed .step-icon {
+            background-color: #0D6B48; /* pitch-green */
+            color: #fff;
+            border-color: #0D6B48;
+        }
+        .step-line {
+            flex-grow: 1;
+            height: 2px;
+            background-color: #181b23;
+            margin: 0 12px;
+            opacity: 0.2;
+        }
+        .step-completed + .step-line {
+            opacity: 1;
+            background-color: #0D6B48;
+            height: 4px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar (Suppressed for Checkout Flow, but keeping a simplified header for brand anchor) -->
+<header class="w-full px-margin-mobile md:px-margin-desktop py-4 flex justify-center items-center border-b-2 border-primary bg-pitch-green">
+<div class="flex items-center gap-4">
+<img alt="StickerAlbi Logo" class="h-12 w-12 rounded-full border-2 border-trophy-gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLriZmtHmhwvu9cEuF3udCaAUruLxS5K_o4GzZpr4-EiX-zJe3HMOXVkQqUPC00jx7S-i2xqkLotHmQz7ZAfjvSFERrPmw5CRmlyiWV0buM5v7Jrcv8Dx6DZIMLfP7a7J4338xpX6PqPv-slcsqrDDv-ssW7y2Pu55Z_DxYDod2m2rsjm2nzK-HceOLHDl6sjTYNidbrcsrxhgGWP_bj9EIUIQei4XivlX-pZODunagsGodMCfZSWfK10RqlU0eYViL7vVubked6c"/>
+<h1 class="text-headline-md font-headline-md font-black text-trophy-gold italic uppercase tracking-wider">StickerAlbi</h1>
+</div>
+</header>
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 flex flex-col items-center">
+<!-- Narrow Checkout Layout -->
+<div class="w-full max-w-[900px] flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+<!-- Left Column: Stepper & Form -->
+<div class="w-full lg:w-2/3 flex flex-col gap-8">
+<!-- Stepper Progress -->
+<div class="w-full max-w-[600px] mx-auto mb-4">
+<div class="flex items-center justify-between w-full relative">
+<!-- Step 1: Cart (Completed) -->
+<div class="flex flex-col items-center gap-2 step-completed z-10 w-1/3">
+<div class="step-icon">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">check</span>
+</div>
+<span class="text-label-bold font-label-bold text-on-surface-variant">Carrito</span>
+</div>
+<div class="step-line absolute left-[16%] right-[50%] top-[16px] -z-10"></div>
+<!-- Step 2: Shipping (Active) -->
+<div class="flex flex-col items-center gap-2 step-active z-10 w-1/3">
+<div class="step-icon">2</div>
+<span class="text-label-bold font-label-bold text-on-background">Envío</span>
+</div>
+<div class="step-line absolute left-[50%] right-[16%] top-[16px] -z-10 opacity-20"></div>
+<!-- Step 3: Payment (Pending) -->
+<div class="flex flex-col items-center gap-2 z-10 w-1/3">
+<div class="step-icon opacity-50">3</div>
+<span class="text-label-bold font-label-bold text-on-surface-variant opacity-50">Pago</span>
+</div>
+</div>
+</div>
+<!-- Shipping Form -->
+<div class="bg-clean-white rounded-lg p-6 md:p-8 sticker-border sticker-shadow w-full max-w-[600px] mx-auto">
+<h2 class="text-headline-md font-headline-md mb-6 border-b-2 border-surface-variant pb-4">Información de Envío</h2>
+<form class="flex flex-col gap-6">
+<!-- Contact Info -->
+<div class="flex flex-col gap-4">
+<h3 class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-wider">Contacto</h3>
+<div class="flex flex-col gap-1">
+<label class="text-body-md font-medium" for="email">Correo Electrónico</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="email" placeholder="tu@email.com" required="" type="email"/>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex flex-col gap-1 w-full md:w-1/2">
+<label class="text-body-md font-medium" for="phone">Teléfono</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="phone" placeholder="11 1234 5678" required="" type="tel"/>
+</div>
+<div class="flex flex-col gap-1 w-full md:w-1/2">
+<label class="text-body-md font-medium" for="dni">DNI</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="dni" placeholder="Sin puntos" required="" type="text"/>
+</div>
+</div>
+</div>
+<!-- Address Info -->
+<div class="flex flex-col gap-4 mt-2">
+<h3 class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-wider">Dirección de Entrega</h3>
+<div class="flex flex-col gap-1">
+<label class="text-body-md font-medium" for="fullname">Nombre Completo</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="fullname" placeholder="Tal como figura en el DNI" required="" type="text"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-body-md font-medium" for="address">Dirección (Calle y Número)</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="address" placeholder="Ej: Av. Corrientes 1234" required="" type="text"/>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex flex-col gap-1 w-full md:w-1/2">
+<label class="text-body-md font-medium" for="apartment">Piso / Depto (Opcional)</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="apartment" placeholder="Ej: 4B" type="text"/>
+</div>
+<div class="flex flex-col gap-1 w-full md:w-1/2">
+<label class="text-body-md font-medium" for="zip">Código Postal</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="zip" placeholder="C1043AAZ" required="" type="text"/>
+</div>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex flex-col gap-1 w-full md:w-1/2">
+<label class="text-body-md font-medium" for="province">Provincia</label>
+<select class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="province" required="">
+<option disabled="" selected="" value="">Selecciona una provincia</option>
+<option value="caba">Ciudad Autónoma de Buenos Aires</option>
+<option value="ba">Buenos Aires</option>
+<option value="cba">Córdoba</option>
+<option value="sf">Santa Fe</option>
+</select>
+</div>
+<div class="flex flex-col gap-1 w-full md:w-1/2">
+<label class="text-body-md font-medium" for="city">Ciudad / Localidad</label>
+<input class="w-full rounded bg-surface-container-low border border-outline-variant p-3 input-focus font-body-md text-on-background" id="city" placeholder="Ej: Rosario" required="" type="text"/>
+</div>
+</div>
+</div>
+<!-- Submit Action -->
+<div class="mt-6 pt-6 border-t-2 border-surface-variant flex justify-end">
+<button class="bg-trophy-gold text-on-background font-label-bold text-label-bold uppercase py-4 px-8 rounded border-2 border-on-background sticker-shadow hover:translate-y-[2px] hover:translate-x-[2px] hover:shadow-[2px_2px_0px_#181b23] transition-all flex items-center gap-2" type="submit">
+                                Continuar al Pago
+                                <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Right Column: Order Summary Sidebar -->
+<aside class="w-full lg:w-1/3 bg-surface-container-lowest rounded-lg p-6 border border-outline-variant sticky top-8">
+<h3 class="text-headline-md font-headline-md mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-pitch-green">shopping_bag</span>
+                    Resumen
+                </h3>
+<div class="flex flex-col gap-4 mb-6">
+<!-- Item 1 -->
+<div class="flex items-start gap-4 pb-4 border-b border-surface-variant">
+<div class="w-16 h-20 bg-surface-container-high border border-outline-variant rounded flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-outline">image</span>
+</div>
+<div class="flex flex-col flex-grow">
+<span class="text-label-bold font-label-bold">Pack x5 Sobres Mundial Qatar 2022</span>
+<span class="text-body-md text-on-surface-variant">Cantidad: 2</span>
+<span class="text-label-bold font-label-bold text-pitch-green mt-1">$4.500</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-start gap-4 pb-4 border-b border-surface-variant">
+<div class="w-16 h-20 bg-trophy-gold border border-outline-variant rounded flex items-center justify-center shrink-0 relative overflow-hidden">
+<div class="absolute inset-0 opacity-20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, #000 10px, #000 20px);"></div>
+<span class="material-symbols-outlined text-on-background z-10">star</span>
+</div>
+<div class="flex flex-col flex-grow">
+<span class="text-label-bold font-label-bold">Lionel Messi - Legend Extra Sticker</span>
+<span class="text-body-md text-on-surface-variant">Cantidad: 1</span>
+<span class="text-label-bold font-label-bold text-pitch-green mt-1">$15.000</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2 mb-4 pb-4 border-b-2 border-on-background">
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="font-bold">$24.000</span>
+</div>
+<div class="flex justify-between items-center text-body-md">
+<span class="text-on-surface-variant">Envío</span>
+<span class="text-pitch-green font-bold text-sm italic">Calculado en el próximo paso</span>
+</div>
+</div>
+<div class="flex justify-between items-end">
+<span class="text-headline-md font-headline-md uppercase">Total</span>
+<span class="text-price-display font-price-display text-pitch-green">$24.000</span>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-on-background text-clean-white w-full mt-auto border-t-4 border-pitch-green py-12 px-margin-mobile md:px-margin-desktop">
+<div class="max-w-[1280px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-headline-md font-headline-md text-trophy-gold italic">
+                StickerAlbi
+            </div>
+<div class="flex flex-wrap justify-center gap-6 text-body-md font-body-md text-surface-variant">
+<a class="hover:text-clean-white underline transition-colors" href="#">Shipping Policy</a>
+<a class="hover:text-clean-white underline transition-colors" href="#">Bank Transfer Guide</a>
+<a class="hover:text-clean-white underline transition-colors" href="#">Returns</a>
+<a class="hover:text-clean-white underline transition-colors" href="#">Terms of Service</a>
+</div>
+<div class="text-body-md font-body-md text-surface-variant text-center md:text-right">
+                © 2024 StickerAlbi Argentina - Official Collector's Hub
+            </div>
+</div>
+</footer>
+</body></html>

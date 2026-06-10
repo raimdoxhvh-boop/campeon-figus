@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Catálogo - Campeón Figus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Source+Sans+3:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "error-container": "#ffdad6",
+                "trophy-gold": "#FFF200",
+                "surface-container": "#ecedf8",
+                "on-background": "#181b23",
+                "primary-container": "#27ae60",
+                "surface-dim": "#d8d9e4",
+                "clean-white": "#FFFFFF",
+                "secondary": "#735c00",
+                "surface": "#f9f9ff",
+                "on-tertiary": "#ffffff",
+                "secondary-fixed-dim": "#eec209",
+                "background": "#f9f9ff",
+                "surface-bright": "#f9f9ff",
+                "on-tertiary-container": "#690000",
+                "on-primary-fixed-variant": "#005228",
+                "surface-container-high": "#e6e8f2",
+                "tertiary-fixed-dim": "#ffb4a8",
+                "surface-container-low": "#f2f3fe",
+                "secondary-fixed": "#ffe084",
+                "primary-fixed-dim": "#61de8a",
+                "on-primary-container": "#00391a",
+                "inverse-surface": "#2d3038",
+                "primary": "#006d37",
+                "secondary-container": "#fed023",
+                "on-surface-variant": "#3d4a3f",
+                "on-error-container": "#93000a",
+                "surface-container-highest": "#e0e2ed",
+                "surface-tint": "#006d37",
+                "pitch-green": "#0D6B48",
+                "surface-variant": "#e0e2ed",
+                "on-surface": "#181b23",
+                "inverse-primary": "#61de8a",
+                "outline": "#6d7a6e",
+                "outline-variant": "#bccabc",
+                "tertiary-fixed": "#ffdad4",
+                "on-secondary-container": "#6f5900",
+                "surface-container-lowest": "#ffffff",
+                "on-secondary-fixed": "#231b00",
+                "on-error": "#ffffff",
+                "action-orange": "#E67E22",
+                "on-tertiary-fixed": "#410000",
+                "error": "#ba1a1a",
+                "tertiary": "#c00001",
+                "inverse-on-surface": "#eff0fb",
+                "on-tertiary-fixed-variant": "#930001",
+                "on-primary-fixed": "#00210c",
+                "on-primary": "#ffffff",
+                "tertiary-container": "#ff6753",
+                "on-secondary": "#ffffff",
+                "on-secondary-fixed-variant": "#574500",
+                "primary-fixed": "#7efba4"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "gutter": "16px",
+                "max-width": "1280px",
+                "unit": "4px",
+                "margin-desktop": "64px",
+                "margin-mobile": "16px"
+        },
+        "fontFamily": {
+                "headline-xl": [
+                        "Lexend"
+                ],
+                "price-display": [
+                        "Lexend"
+                ],
+                "body-lg": [
+                        "Source Sans 3"
+                ],
+                "headline-md": [
+                        "Lexend"
+                ],
+                "body-md": [
+                        "Source Sans 3"
+                ],
+                "label-bold": [
+                        "Lexend"
+                ],
+                "headline-lg-mobile": [
+                        "Lexend"
+                ],
+                "headline-lg": [
+                        "Lexend"
+                ]
+        },
+        "fontSize": {
+                "headline-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "price-display": [
+                        "24px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "800"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-bold": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "28px",
+                        {
+                                "lineHeight": "36px",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+    body { background-color: #f9f9ff; color: #181b23; }
+    .sticker-shadow { box-shadow: 4px 4px 0px #181b23; }
+    .card-border { border: 1px solid rgba(40, 43, 51, 0.1); }
+    .gold-shimmer {
+        position: relative;
+        overflow: hidden;
+    }
+    .gold-shimmer::before {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%; width: 50%; height: 100%;
+        background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255, 242, 0, 0.4) 50%, rgba(255,255,255,0) 100%);
+        transform: skewX(-20deg);
+        animation: shimmer 3s infinite;
+    }
+    @keyframes shimmer {
+        100% { left: 200%; }
+    }
+</style>
+</head>
+<body class="font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-pitch-green dark:bg-inverse-surface text-trophy-gold dark:text-secondary-fixed docked full-width top-0 z-50 border-b-2 border-primary shadow-[4px_4px_0px_#181b23] hidden md:flex justify-between items-center w-full px-margin-desktop py-4 sticky">
+<div class="flex items-center gap-4">
+<img alt="Campeón Figus Logo" class="h-12 w-12 rounded-md bg-clean-white p-1" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLriZmtHmhwvu9cEuF3udCaAUruLxS5K_o4GzZpr4-EiX-zJe3HMOXVkQqUPC00jx7S-i2xqkLotHmQz7ZAfjvSFERrPmw5CRmlyiWV0buM5v7Jrcv8Dx6DZIMLfP7a7J4338xpX6PqPv-slcsqrDDv-ssW7y2Pu55Z_DxYDod2m2rsjm2nzK-HceOLHDl6sjTYNidbrcsrxhgGWP_bj9EIUIQei4XivlX-pZODunagsGodMCfZSWfK10RqlU0eYViL7vVubked6c"/>
+<span class="text-headline-md font-headline-md font-black text-trophy-gold italic uppercase tracking-tight">StickerAlbi</span>
+</div>
+<nav class="flex gap-8">
+<a class="text-trophy-gold font-bold border-b-4 border-trophy-gold pb-1 hover:text-trophy-gold transition-colors duration-200 translate-y-0.5 transition-all" href="#">Catalog</a>
+<a class="text-clean-white dark:text-on-surface-variant font-medium hover:text-trophy-gold transition-colors duration-200" href="#">Albums</a>
+<a class="text-clean-white dark:text-on-surface-variant font-medium hover:text-trophy-gold transition-colors duration-200" href="#">Rare</a>
+<a class="text-clean-white dark:text-on-surface-variant font-medium hover:text-trophy-gold transition-colors duration-200" href="#">Teams</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hover:text-trophy-gold transition-colors duration-200 text-clean-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+</button>
+<img alt="User profile" class="h-10 w-10 rounded-full border-2 border-trophy-gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm0r-T3p-BGBYITJfGZoGJUt5cbHQSOo969bLvB3FGvwyP0BnC4L4S72WD6F_42ArOcT1lw74_xLl8wuGEdQcCWqcvEmYHw0eG3oM6IqiIr7p7rmPFOL-PDOruSRe1k8g_uFKIeQKb5PXGXYGJe_Qkf3Yot8RoisPIcRYKfUalvE-aUeSWaaq4fTJ7xyt62gPHqfo3ZqJPlMTnc1EPSy5JgoE9kwD89b2bjl3GwYRAAhjQIMmikM9EI7NqdLEQDyE0XHs7WSy2kEw"/>
+</div>
+</header>
+<!-- Main Layout -->
+<main class="flex-grow w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col md:flex-row gap-8">
+<!-- Sidebar Filters -->
+<aside class="w-full md:w-64 flex-shrink-0">
+<div class="bg-clean-white rounded-lg p-6 card-border sticker-shadow sticky top-24">
+<h2 class="text-headline-md font-headline-md mb-6 border-b-2 border-primary pb-2">Filtros</h2>
+<div class="mb-6">
+<h3 class="text-label-bold font-label-bold mb-3 uppercase text-outline">Categorías</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input checked="" class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Todos</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Álbumes</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Figuritas Sueltas</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Packs (x10, x25)</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Combos</span>
+</label>
+</div>
+</div>
+<div>
+<h3 class="text-label-bold font-label-bold mb-3 uppercase text-outline">Edición Especial</h3>
+<div class="space-y-2">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors text-trophy-gold font-bold drop-shadow-sm">Adrenalyn XL</span>
+</label>
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="rounded border-primary text-primary focus:ring-primary w-5 h-5" type="checkbox"/>
+<span class="group-hover:text-primary transition-colors">Extra Stickers</span>
+</label>
+</div>
+</div>
+<button class="mt-8 w-full bg-surface-variant text-on-surface-variant font-label-bold text-label-bold py-2 rounded-md hover:bg-surface-dim transition-colors">Limpiar Filtros</button>
+</div>
+</aside>
+<!-- Product Grid -->
+<section class="flex-grow">
+<div class="flex justify-between items-center mb-6">
+<h1 class="text-headline-lg font-headline-lg text-on-background">Catálogo Mundial 2026</h1>
+<select class="border-2 border-primary rounded-md px-4 py-2 bg-clean-white focus:ring-primary focus:border-primary font-body-md text-body-md">
+<option>Destacados</option>
+<option>Menor Precio</option>
+<option>Mayor Precio</option>
+<option>A-Z</option>
+</select>
+</div>
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Product Card 1 -->
+<article class="bg-clean-white rounded-lg p-4 card-border group hover:sticker-shadow transition-all duration-200 flex flex-col h-full relative">
+<div class="absolute top-2 left-2 z-10 flex flex-col gap-1">
+<span class="bg-primary text-clean-white text-xs font-label-bold px-2 py-1 rounded-sm uppercase tracking-wide">Nuevo</span>
+</div>
+<div class="aspect-square bg-surface-container-low rounded-md mb-4 overflow-hidden">
+<img alt="World Cup 2026 Hardcover Album" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A high-quality, professional product photography shot of a thick, hardcover sticker album for a major soccer tournament. The album cover features vibrant, high-contrast graphics with stadium lighting motifs. It is placed on a pristine white background, lit with bright studio lights to emphasize its premium, collectible feel within a vibrant e-commerce light mode setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9KSGISBy1Utux6RZyzDy--LqeW09wWTVeQeRz3THDREWU-MDA5c6ZiMmBsusIJWBVfeyI4Qqc8WvbgC41jymiBQG9kmmgmWkgsNrcq6FKMdTvQGVan2DAOsb3_lY0swyym_QULQMH2jkS8BVV2V5khgpu1ZpzahT3GTbHlBSj8fJlhLWCqysN3XqopT4KdfN-8UfWxv2aivzC_EjrrxGn8t7HmKdGQt9_6p1wqa1xsIw7oUoakM-CaqxJ_IaQY1pyc_-Ef1CNzxY"/>
+</div>
+<div class="flex-grow flex flex-col">
+<p class="text-sm text-outline mb-1 font-label-bold uppercase">Álbumes</p>
+<h3 class="text-headline-md font-headline-md text-on-background leading-tight mb-2">Álbum Tapa Dura Mundial 2026</h3>
+<p class="text-body-md font-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Edición premium coleccionista. Incluye 5 sobres de regalo para empezar tu colección.</p>
+<div class="mt-auto pt-4 border-t border-surface-variant flex items-end justify-between">
+<div>
+<span class="text-xs text-primary font-bold block mb-1">En Stock</span>
+<span class="text-price-display font-price-display text-on-background">$15.000 <span class="text-sm font-normal text-outline">ARS</span></span>
+</div>
+<button class="bg-trophy-gold text-on-background font-label-bold text-label-bold w-10 h-10 rounded-md flex items-center justify-center hover:sticker-shadow hover:-translate-y-0.5 transition-all group-hover:w-auto group-hover:px-4 overflow-hidden">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 1;">add_shopping_cart</span>
+<span class="hidden group-hover:inline-block ml-2 whitespace-nowrap">Agregar</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 2 -->
+<article class="bg-clean-white rounded-lg p-4 card-border group hover:sticker-shadow transition-all duration-200 flex flex-col h-full relative gold-shimmer border-2 border-trophy-gold">
+<div class="absolute top-2 left-2 z-10 flex flex-col gap-1">
+<span class="bg-trophy-gold text-on-background text-xs font-label-bold px-2 py-1 rounded-sm uppercase tracking-wide">Especial</span>
+</div>
+<div class="aspect-square bg-surface-container-low rounded-md mb-4 overflow-hidden relative">
+<img alt="Shiny Special Edition Sticker Card" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A close-up, highly detailed shot of a rare, holographic sports trading card or sticker. The card reflects brilliant gold and rainbow light, creating a shimmering, tactile effect. It sits against a clean, light-colored surface with a heavy drop shadow, highlighting its exclusivity and high value in a modern, bold e-commerce design environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAN5e1IPIGSHjnUlc--pHzfnjedey_IJdAyTpC-B7c4h3po84EnvxvuTuGX9TPIIt9MCrMMedPdJq8iBh2ln2qpqdY5lM9B4yeAfvfcBZqoQKE0ZsdcG5xkfydKaNBh9-4zbjIUlr7Jgsl_jzG97bepVoeJOCe5b1hBDWj7ogdbkOaeRqJCR0-w1YP1VwKUJijjdM-U9TidnCd0H1GpqZ22HdluauHzCu42PDF3l10G9dCvPG72ukkPlmmc8nm_u8rDFS_V88TQ0Ko"/>
+</div>
+<div class="flex-grow flex flex-col">
+<p class="text-sm text-outline mb-1 font-label-bold uppercase">Adrenalyn XL</p>
+<h3 class="text-headline-md font-headline-md text-on-background leading-tight mb-2">Lionel Messi - Legend Card Oro</h3>
+<p class="text-body-md font-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Figurita holográfica edición extra rare. Estado Mint 10. ¡Imprescindible para tu álbum!</p>
+<div class="mt-auto pt-4 border-t border-surface-variant flex items-end justify-between">
+<div>
+<span class="text-xs text-action-orange font-bold block mb-1">¡Últimas 2!</span>
+<span class="text-price-display font-price-display text-on-background">$45.000 <span class="text-sm font-normal text-outline">ARS</span></span>
+</div>
+<button class="bg-trophy-gold text-on-background font-label-bold text-label-bold w-10 h-10 rounded-md flex items-center justify-center hover:sticker-shadow hover:-translate-y-0.5 transition-all group-hover:w-auto group-hover:px-4 overflow-hidden">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 1;">add_shopping_cart</span>
+<span class="hidden group-hover:inline-block ml-2 whitespace-nowrap">Agregar</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 3 -->
+<article class="bg-clean-white rounded-lg p-4 card-border group hover:sticker-shadow transition-all duration-200 flex flex-col h-full relative">
+<div class="aspect-square bg-surface-container-low rounded-md mb-4 overflow-hidden">
+<img alt="Pack of Stickers" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A vibrant, high-energy photo showing a stack of sealed sticker packs for a major international sporting event. The foil packaging reflects bright studio lighting, emphasizing the tactile 'unboxing' thrill. The scene is brightly lit against a light grey surface with deep, graphic shadows to suit a bold, sports-themed light mode layout." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArh_YA-bbARvaJWA2tRsc5yG1b963eul7O1MxTuASOiafQg6QGsvmPIkTJb2QhWOq73WhTq8pghpTMJxqgHrUGGom3fwc6s0VJfq9wNh5xP3vKA6vTX3T3dzPTPi-uKUjCOX7UbIa_h5xRov_pSK-x_eOJvLZjRAtmr4iwatvo8HE25JuRZKp3pJE5LdUxLyz7HocHuxw8xbEWLVaGVQU9mI4_wSWSiFUMxRe2TQUhVYnCGJVGISxZUUfiM6hQNitmnREELb7ME6I"/>
+</div>
+<div class="flex-grow flex flex-col">
+<p class="text-sm text-outline mb-1 font-label-bold uppercase">Packs</p>
+<h3 class="text-headline-md font-headline-md text-on-background leading-tight mb-2">Pack x50 Sobres Cerrados</h3>
+<p class="text-body-md font-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Caja sellada de fábrica. 250 figuritas en total para avanzar rápido en tu colección.</p>
+<div class="mt-auto pt-4 border-t border-surface-variant flex items-end justify-between">
+<div>
+<span class="text-xs text-primary font-bold block mb-1">En Stock</span>
+<span class="text-price-display font-price-display text-on-background">$40.000 <span class="text-sm font-normal text-outline">ARS</span></span>
+</div>
+<button class="bg-trophy-gold text-on-background font-label-bold text-label-bold w-10 h-10 rounded-md flex items-center justify-center hover:sticker-shadow hover:-translate-y-0.5 transition-all group-hover:w-auto group-hover:px-4 overflow-hidden">
+<span class="material-symbols-outlined shrink-0" style="font-variation-settings: 'FILL' 1;">add_shopping_cart</span>
+<span class="hidden group-hover:inline-block ml-2 whitespace-nowrap">Agregar</span>
+</button>
+</div>
+</div>
+</article>
+<!-- Product Card 4 -->
+<article class="bg-clean-white rounded-lg p-4 card-border group hover:sticker-shadow transition-all duration-200 flex flex-col h-full relative">
+<div class="absolute top-2 left-2 z-10 flex flex-col gap-1">
+<span class="bg-error text-on-error text-xs font-label-bold px-2 py-1 rounded-sm uppercase tracking-wide">Agotado</span>
+</div>
+<div class="aspect-square bg-surface-container-low rounded-md mb-4 overflow-hidden opacity-60 grayscale">
+<img alt="Pack of Stickers 10x" class="w-full h-full object-cover" data-alt="A single sealed pack of collectible sports stickers resting on a clean surface. The image is rendered with a slightly desaturated, light grey tone to indicate it is out of stock, while maintaining the crisp, high-contrast lighting characteristic of a modern, sports-centric e-commerce light mode design." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBL8TmALg17IGMinXclvuTqB2Y98IWwTTUk2A5lAV0MnnB0EFVz-syFuUSwj_1PT84GCldOobgtChQ3efwRa5OwOnJ6_bPavE591Fxr3nSLW--p1TQoxpq68Td10i63KL7hUXN-AnHL0kniuLHGPmwaY9owULNX4c6bf4_ILZku34TAcN-kglNHqxM8vwXZRH9Qn9vUICoQRGeNofDbuKyVItBj4detW7P7PVWMzJKj1FNQF0glD1XnOqxg6b4nwjUcoRNe--DZ0UY"/>
+</div>
+<div class="flex-grow flex flex-col opacity-60">
+<p class="text-sm text-outline mb-1 font-label-bold uppercase">Packs</p>
+<h3 class="text-headline-md font-headline-md text-on-background leading-tight mb-2">Pack x10 Sobres</h3>
+<p class="text-body-md font-body-md text-on-surface-variant line-clamp-2 mb-4 flex-grow">Ideal para el intercambio de fin de semana.</p>
+<div class="mt-auto pt-4 border-t border-surface-variant flex items-end justify-between">
+<div>
+<span class="text-xs text-error font-bold block mb-1">Sin Stock</span>
+<span class="text-price-display font-price-display text-on-background">$8.000 <span class="text-sm font-normal text-outline">ARS</span></span>
+</div>
+<button class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold w-10 h-10 rounded-md flex items-center justify-center cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined shrink-0">shopping_cart_off</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</section>
+</main>
+<!-- BottomNavBar for Mobile -->
+<nav class="bg-surface-container-highest dark:bg-inverse-surface text-primary dark:text-inverse-primary fixed bottom-0 w-full z-50 rounded-t-xl border-t-2 border-outline-variant shadow-lg fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-3 bg-surface-container-highest md:hidden">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 scale-95 duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">style</span>
+<span class="text-label-bold font-label-bold">Market</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="text-label-bold font-label-bold">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-xl transition-colors relative" href="#">
+<span class="absolute top-0 right-2 bg-trophy-gold text-on-background text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-on-background">3</span>
+<span class="material-symbols-outlined mb-1">shopping_basket</span>
+<span class="text-label-bold font-label-bold">Cart</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-high px-4 py-1 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="text-label-bold font-label-bold">Account</span>
+</a>
+</nav>
+<!-- Footer -->
+<footer class="bg-on-background dark:bg-surface-container-lowest text-clean-white w-full mt-auto border-t-4 border-pitch-green flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-12 gap-8 mb-16 md:mb-0">
+<div class="flex flex-col items-center md:items-start gap-4">
+<span class="text-headline-md font-headline-md text-trophy-gold">StickerAlbi</span>
+<p class="text-body-md font-body-md text-surface-variant text-center md:text-left">© 2024 StickerAlbi Argentina - Official Collector's Hub</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="text-surface-variant hover:text-clean-white underline transition-colors text-body-md font-body-md" href="#">Shipping Policy</a>
+<a class="text-surface-variant hover:text-clean-white underline transition-colors text-body-md font-body-md" href="#">Bank Transfer Guide</a>
+<a class="text-surface-variant hover:text-clean-white underline transition-colors text-body-md font-body-md" href="#">Returns</a>
+<a class="text-surface-variant hover:text-clean-white underline transition-colors text-body-md font-body-md" href="#">Terms of Service</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pago - Campeón Figus</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800&amp;family=Source+Sans+3:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "error-container": "#ffdad6",
+                      "trophy-gold": "#FFF200",
+                      "surface-container": "#ecedf8",
+                      "on-background": "#181b23",
+                      "primary-container": "#27ae60",
+                      "surface-dim": "#d8d9e4",
+                      "clean-white": "#FFFFFF",
+                      "secondary": "#735c00",
+                      "surface": "#f9f9ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed-dim": "#eec209",
+                      "background": "#f9f9ff",
+                      "surface-bright": "#f9f9ff",
+                      "on-tertiary-container": "#690000",
+                      "on-primary-fixed-variant": "#005228",
+                      "surface-container-high": "#e6e8f2",
+                      "tertiary-fixed-dim": "#ffb4a8",
+                      "surface-container-low": "#f2f3fe",
+                      "secondary-fixed": "#ffe084",
+                      "primary-fixed-dim": "#61de8a",
+                      "on-primary-container": "#00391a",
+                      "inverse-surface": "#2d3038",
+                      "primary": "#006d37",
+                      "secondary-container": "#fed023",
+                      "on-surface-variant": "#3d4a3f",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#e0e2ed",
+                      "surface-tint": "#006d37",
+                      "pitch-green": "#0D6B48",
+                      "surface-variant": "#e0e2ed",
+                      "on-surface": "#181b23",
+                      "inverse-primary": "#61de8a",
+                      "outline": "#6d7a6e",
+                      "outline-variant": "#bccabc",
+                      "tertiary-fixed": "#ffdad4",
+                      "on-secondary-container": "#6f5900",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#231b00",
+                      "on-error": "#ffffff",
+                      "action-orange": "#E67E22",
+                      "on-tertiary-fixed": "#410000",
+                      "error": "#ba1a1a",
+                      "tertiary": "#c00001",
+                      "inverse-on-surface": "#eff0fb",
+                      "on-tertiary-fixed-variant": "#930001",
+                      "on-primary-fixed": "#00210c",
+                      "on-primary": "#ffffff",
+                      "tertiary-container": "#ff6753",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#574500",
+                      "primary-fixed": "#7efba4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "max-width": "1280px",
+                      "unit": "4px",
+                      "margin-desktop": "64px",
+                      "margin-mobile": "16px"
+              },
+              "fontFamily": {
+                      "headline-xl": ["Lexend"],
+                      "price-display": ["Lexend"],
+                      "body-lg": ["Source Sans 3"],
+                      "headline-md": ["Lexend"],
+                      "body-md": ["Source Sans 3"],
+                      "label-bold": ["Lexend"],
+                      "headline-lg-mobile": ["Lexend"],
+                      "headline-lg": ["Lexend"]
+              },
+              "fontSize": {
+                      "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "price-display": ["24px", {"lineHeight": "24px", "fontWeight": "800"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-bold": ["14px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .tactile-shadow { box-shadow: 4px 4px 0px #181b23; }
+        .tactile-shadow:active { box-shadow: 0px 0px 0px #181b23; transform: translate(4px, 4px); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col">
+<header class="w-full bg-clean-white border-b border-outline-variant py-4 flex justify-center items-center">
+<img alt="Campeón Figus" class="h-16 w-16 rounded-full object-cover border-2 border-pitch-green" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLriZmtHmhwvu9cEuF3udCaAUruLxS5K_o4GzZpr4-EiX-zJe3HMOXVkQqUPC00jx7S-i2xqkLotHmQz7ZAfjvSFERrPmw5CRmlyiWV0buM5v7Jrcv8Dx6DZIMLfP7a7J4338xpX6PqPv-slcsqrDDv-ssW7y2Pu55Z_DxYDod2m2rsjm2nzK-HceOLHDl6sjTYNidbrcsrxhgGWP_bj9EIUIQei4XivlX-pZODunagsGodMCfZSWfK10RqlU0eYViL7vVubked6c"/>
+</header>
+<main class="flex-grow w-full max-w-[600px] mx-auto px-margin-mobile py-8 flex flex-col gap-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-pitch-green" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+<h1 class="text-headline-lg-mobile md:text-headline-lg font-headline-lg-mobile md:font-headline-lg text-on-background">Pago por Transferencia</h1>
+</div>
+<p class="text-body-lg font-body-lg text-on-surface-variant">
+            Por favor, realizá la transferencia a la siguiente cuenta bancaria. Tu pedido no será procesado hasta que los fondos se hayan acreditado en nuestra cuenta.
+        </p>
+<section class="bg-clean-white border border-outline-variant rounded-lg p-6 relative overflow-hidden">
+<div class="absolute top-0 left-0 w-2 h-full bg-pitch-green"></div>
+<div class="flex flex-col gap-4">
+<div class="flex justify-between items-center border-b border-surface-variant pb-3">
+<span class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-wider">Banco</span>
+<span class="text-body-lg font-body-lg font-bold">Banco de la Nación Argentina</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-variant pb-3">
+<span class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-wider">Titular</span>
+<span class="text-body-lg font-body-lg font-bold">Campeón Figus SRL</span>
+</div>
+<div class="flex justify-between items-center border-b border-surface-variant pb-3 group">
+<span class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-wider">CBU</span>
+<div class="flex items-center gap-2">
+<span class="text-headline-md font-headline-md text-pitch-green tracking-tight">0110599520000001234567</span>
+<button class="p-1 text-outline hover:text-pitch-green transition-colors" onclick="alert('CBU Copiado')">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+</div>
+</div>
+<div class="flex justify-between items-center pt-1 group">
+<span class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-wider">Alias</span>
+<div class="flex items-center gap-2">
+<span class="text-headline-md font-headline-md text-pitch-green tracking-tight uppercase">CAMPEON.FIGUS.BNA</span>
+<button class="p-1 text-outline hover:text-pitch-green transition-colors" onclick="alert('Alias Copiado')">
+<span class="material-symbols-outlined text-[20px]">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<section class="bg-surface-container-low border-2 border-dashed border-primary rounded-lg p-8 flex flex-col items-center justify-center gap-4 mt-4 transition-colors hover:bg-surface-container">
+<span class="material-symbols-outlined text-[48px] text-pitch-green">upload_file</span>
+<div class="text-center">
+<h3 class="text-headline-md font-headline-md text-on-background mb-1">Subí tu comprobante</h3>
+<p class="text-body-md font-body-md text-on-surface-variant">Formatos aceptados: JPG, PNG, PDF. Max 5MB.</p>
+</div>
+<button class="bg-clean-white border-2 border-pitch-green text-pitch-green text-label-bold font-label-bold px-6 py-2 rounded mt-2 hover:bg-surface-container-highest transition-colors">
+                Seleccionar Archivo
+            </button>
+</section>
+<div class="bg-surface-container-high p-4 rounded-lg flex justify-between items-center mt-4">
+<span class="text-body-lg font-body-lg font-bold">Total a Pagar:</span>
+<span class="text-price-display font-price-display text-on-background">$14.500</span>
+</div>
+<button class="w-full bg-trophy-gold text-on-background text-headline-md font-headline-md py-4 rounded-lg tactile-shadow uppercase tracking-wide mt-6 transition-transform">
+            Finalizar Pedido
+        </button>
+<div class="flex items-center justify-center gap-2 mt-4 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span class="text-label-bold font-label-bold">Pago 100% Seguro</span>
+</div>
+</main>
+</body></html>

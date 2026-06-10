@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Campeón Figus - Figuritas Mundial FIFA 2026 | Tienda Oficial</title>
+  <meta name="description" content="Comprá tu álbum y figuritas del Mundial FIFA 2026 Panini. Envíos a todo Argentina. Pago por transferencia o tarjeta. Tienda oficial Campeón Figus."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "pitch-green":"#0D6B48","primary":"#006d37","primary-container":"#27ae60",
+            "on-primary":"#ffffff","trophy-gold":"#FFF200","secondary-container":"#fed023",
+            "on-background":"#181b23","surface":"#f9f9ff","surface-container":"#ecedf8",
+            "surface-container-low":"#f2f3fe","surface-container-high":"#e6e8f2",
+            "surface-container-highest":"#e0e2ed","surface-container-lowest":"#ffffff",
+            "surface-dim":"#d8d9e4","surface-variant":"#e0e2ed","on-surface-variant":"#3d4a3f",
+            "inverse-surface":"#2d3038","outline":"#6d7a6e","outline-variant":"#bccabc",
+            "error":"#ba1a1a","on-error":"#ffffff","error-container":"#ffdad6",
+            "clean-white":"#FFFFFF","action-orange":"#E67E22",
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *{box-sizing:border-box}
+    body{font-family:'Source Sans 3',sans-serif;background:#f9f9ff;color:#181b23;margin:0}
+    .mso{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle}
+    .mso-fill{font-variation-settings:'FILL' 1}
+
+    /* Sections */
+    .pg{display:none}
+    .pg.active{display:block}
+    .fade-in{animation:fadeIn .3s ease}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* Sticker effects */
+    .s-shadow{box-shadow:4px 4px 0 #181b23}
+    .s-shadow-sm{box-shadow:2px 2px 0 #181b23}
+    .s-border{border:2px solid #181b23}
+    .c-border{border:1px solid rgba(40,43,51,.12)}
+
+    /* Gold shimmer on special cards */
+    .gold-card{position:relative;overflow:hidden;border:2px solid #FFF200}
+    .gold-card::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
+      background:linear-gradient(to right,transparent,rgba(255,242,0,.35),transparent);
+      transform:skewX(-20deg);animation:gshimmer 2.6s infinite}
+    @keyframes gshimmer{100%{left:200%}}
+
+    /* Progress bar shimmer */
+    .prog-bar-inner::after{content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;
+      background:linear-gradient(to right,transparent,rgba(255,255,255,.45),transparent);
+      animation:pshimmer 1.8s infinite}
+    @keyframes pshimmer{100%{left:140%}}
+
+    /* Input */
+    .inp{width:100%;border-radius:.5rem;background:#f2f3fe;border:1.5px solid #bccabc;
+      padding:11px 14px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:#181b23;outline:none;transition:border-color .2s,box-shadow .2s}
+    .inp:focus{border-color:#006d37;box-shadow:0 0 0 3px rgba(0,109,55,.12)}
+    select.inp{cursor:pointer}
+
+    /* Toast */
+    #toast{position:fixed;top:68px;right:20px;z-index:9999;background:#0D6B48;color:#fff;
+      font-family:'Lexend',sans-serif;font-weight:700;font-size:13px;padding:11px 18px;
+      border-radius:10px;box-shadow:4px 4px 0 #181b23;border:2px solid #181b23;
+      display:flex;align-items:center;gap:8px;opacity:0;transform:translateY(-12px);
+      transition:opacity .3s,transform .3s;pointer-events:none;max-width:280px}
+    #toast.show{opacity:1;transform:translateY(0)}
+
+    /* Cart badge */
+    .cart-badge{position:absolute;top:-6px;right:-6px;background:#ba1a1a;color:#fff;
+      font-family:'Lexend',sans-serif;font-weight:700;font-size:10px;width:19px;height:19px;
+      border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+
+    /* Stepper */
+    .s-icon{display:flex;align-items:center;justify-content:center;width:34px;height:34px;
+      border-radius:50%;font-family:'Lexend',sans-serif;font-weight:700;font-size:13px;
+      border:2px solid #181b23;background:#fff;color:#181b23;z-index:10;flex-shrink:0;transition:all .3s}
+    .s-done .s-icon{background:#0D6B48;color:#fff;border-color:#0D6B48}
+    .s-active .s-icon{background:#FFF200;box-shadow:2px 2px 0 #181b23}
+    .s-line{flex-grow:1;height:3px;background:rgba(40,43,51,.15);margin:0 6px;border-radius:99px}
+    .s-line.done{background:#0D6B48}
+
+    /* Product card */
+    .prod-card{transition:box-shadow .18s,transform .15s}
+    .prod-card:hover{box-shadow:4px 4px 0 #181b23;transform:translateY(-2px)}
+
+    /* Confetti */
+    .confetti{position:fixed;width:9px;height:9px;border-radius:2px;animation:cffall 1.6s ease-in forwards;pointer-events:none;z-index:9999}
+    @keyframes cffall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(220px) rotate(540deg);opacity:0}}
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{width:6px}
+    ::-webkit-scrollbar-track{background:#f2f3fe}
+    ::-webkit-scrollbar-thumb{background:#bccabc;border-radius:3px}
+    ::-webkit-scrollbar-thumb:hover{background:#6d7a6e}
+
+    /* Image in product card */
+    .prod-img{width:100%;height:100%;object-fit:contain;transition:transform .35s}
+    .prod-card:hover .prod-img{transform:scale(1.05)}
+
+    /* Announcement ticker */
+    .ticker-wrap{overflow:hidden;white-space:nowrap}
+    .ticker-content{display:inline-block;animation:ticker 28s linear infinite}
+    @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+<!-- ===== TOAST ===== -->
+<div id="toast">
+  <span class="material-symbols-outlined mso-fill" style="font-size:16px">check_circle</span>
+  <span id="toast-msg">¡Agregado!</span>
+</div>
+
+<!-- ===== ANNOUNCEMENT BAR ===== -->
+<div class="bg-on-background text-trophy-gold py-2 overflow-hidden ticker-wrap" style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:700">
+  <div class="ticker-content">
+    🚀 Envíos EN EL DÍA al AMBA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$130.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;·&nbsp; 🚀 Envíos EN EL DÍA al AMBA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$130.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;&nbsp;
+  </div>
+</div>
+
+<!-- ===== TOP NAVBAR (desktop) ===== -->
+<header id="topnav" class="hidden md:flex bg-pitch-green sticky top-0 z-50 border-b-2 border-primary items-center justify-between px-12 py-3" style="box-shadow:0 2px 8px rgba(13,107,72,.35)">
+  <!-- Logo + Brand -->
+  <button onclick="nav('catalog')" class="flex items-center gap-3 group">
+    <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Campeón Figus" class="h-11 w-11 rounded-full border-2 border-trophy-gold object-cover" style="box-shadow:2px 2px 0 #FFF200"/>
+    <span style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase;letter-spacing:-0.03em" class="group-hover:scale-105 transition-transform inline-block">Campeón Figus</span>
+  </button>
+
+  <!-- Nav links -->
+  <nav class="flex items-center gap-7">
+    <button onclick="nav('catalog');setFilter('all')" style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:600" class="text-clean-white hover:text-trophy-gold transition-colors">Catálogo</button>
+    <button onclick="nav('catalog');setFilter('albums')" style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:600" class="text-clean-white hover:text-trophy-gold transition-colors">Álbumes</button>
+    <button onclick="nav('catalog');setFilter('figuritas')" style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:600" class="text-clean-white hover:text-trophy-gold transition-colors">Figuritas</button>
+    <button onclick="nav('catalog');setFilter('combos')" style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:600" class="text-clean-white hover:text-trophy-gold transition-colors">Combos</button>
+    <button onclick="nav('catalog');setFilter('cromos')" style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:600" class="text-clean-white hover:text-trophy-gold transition-colors">Cromos</button>
+  </nav>
+
+  <!-- Search + Cart -->
+  <div class="flex items-center gap-4">
+    <div class="relative">
+      <input id="srch-d" type="text" placeholder="Buscar..." oninput="doSearch()"
+        style="background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:24px;padding:7px 36px 7px 14px;font-size:13px;font-family:'Source Sans 3',sans-serif;outline:none;width:180px;transition:all .2s"
+        onfocus="this.style.background='rgba(255,255,255,.22)';this.style.borderColor='#FFF200'"
+        onblur="this.style.background='rgba(255,255,255,.15)';this.style.borderColor='rgba(255,255,255,.3)'"
+        class="placeholder:text-white/60"/>
+      <span class="material-symbols-outlined mso absolute right-2.5 top-1/2 -translate-y-1/2 text-white/70" style="font-size:17px">search</span>
+    </div>
+    <button onclick="nav('cart')" class="relative text-trophy-gold hover:scale-110 transition-transform">
+      <span class="material-symbols-outlined mso-fill" style="font-size:28px">shopping_cart</span>
+      <span id="badge-d" class="cart-badge hidden">0</span>
+    </button>
+    <!-- WhatsApp -->
+    <a href="https://wa.me/541151244613" target="_blank" class="flex items-center gap-1.5 bg-trophy-gold text-on-background rounded-full px-4 py-2 s-border hover:s-shadow transition-all" style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:700;box-shadow:2px 2px 0 #181b23">
+      <span class="material-symbols-outlined mso-fill" style="font-size:16px">chat</span> WhatsApp
+    </a>
+  </div>
+</header>
+
+<!-- ===== MOBILE HEADER ===== -->
+<header class="md:hidden flex items-center justify-between bg-pitch-green px-4 py-3 sticky top-0 z-50 border-b-2 border-primary" style="box-shadow:0 2px 6px rgba(13,107,72,.4)">
+  <button onclick="nav('catalog')" class="flex items-center gap-2">
+    <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-9 w-9 rounded-full border-2 border-trophy-gold object-cover"/>
+    <span style="font-family:'Lexend',sans-serif;font-size:16px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase">Campeón Figus</span>
+  </button>
+  <div class="flex items-center gap-3">
+    <button onclick="toggleMSearch()" class="text-white"><span class="material-symbols-outlined" style="font-size:22px">search</span></button>
+    <button onclick="nav('cart')" class="relative text-trophy-gold">
+      <span class="material-symbols-outlined mso-fill" style="font-size:24px">shopping_cart</span>
+      <span id="badge-m" class="cart-badge hidden">0</span>
+    </button>
+  </div>
+</header>
+<div id="msearch" class="md:hidden hidden bg-pitch-green px-4 pb-3">
+  <input id="srch-m" type="text" placeholder="Buscar figuritas, álbumes..." oninput="doSearch()"
+    style="width:100%;background:rgba(255,255,255,.15);color:#fff;border:1.5px solid rgba(255,255,255,.3);border-radius:24px;padding:8px 16px;font-size:13px;outline:none"
+    class="placeholder:text-white/60"/>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- ======================== CATÁLOGO =============================== -->
+<!-- ================================================================ -->
+<div id="pg-catalog" class="pg active fade-in">
+
+  <!-- Hero Banner -->
+  <div class="relative bg-pitch-green overflow-hidden" style="min-height:220px">
+    <div class="absolute inset-0" style="background:linear-gradient(135deg,#0D6B48 0%,#006d37 40%,#004d28 100%)"></div>
+    <!-- Decorative circles -->
+    <div class="absolute -top-12 -right-12 w-64 h-64 rounded-full opacity-10" style="background:#FFF200"></div>
+    <div class="absolute -bottom-8 -left-8 w-48 h-48 rounded-full opacity-10" style="background:#FFF200"></div>
+    <div class="relative z-10 max-w-screen-xl mx-auto px-6 md:px-12 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span style="background:#FFF200;color:#181b23;font-family:'Lexend',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.05em">🔥 Colección Oficial</span>
+        </div>
+        <h1 style="font-family:'Lexend',sans-serif;font-size:clamp(26px,5vw,48px);font-weight:900;color:#FFF200;line-height:1.1;letter-spacing:-0.02em">Mundial FIFA 2026<br><span style="color:#fff">Panini Argentina</span></h1>
+        <p class="text-white/80 mt-3 text-sm md:text-base max-w-md">980 figuritas · 48 selecciones · La colección más grande de la historia. Álbumes, sobres y combos con envío a todo el país.</p>
+        <div class="flex gap-3 mt-5 flex-wrap">
+          <button onclick="setFilter('combos')" class="bg-trophy-gold text-on-background s-border s-shadow-sm rounded-lg px-5 py-2.5" style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;transition:all .15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Ver Combos</button>
+          <a href="https://wa.me/541151244613" target="_blank" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white rounded-lg px-5 py-2.5 border border-white/30 transition-all" style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:700">
+            <span class="material-symbols-outlined mso-fill" style="font-size:16px">chat</span> Consultar por WA
+          </a>
+        </div>
+      </div>
+      <div class="flex gap-3 flex-shrink-0">
+        <img src="catalogo/album_tapa_dura_1.webp" alt="Álbum Tapa Dura Mundial 2026" class="h-40 md:h-52 object-contain drop-shadow-2xl" style="filter:drop-shadow(0 8px 24px rgba(0,0,0,.4))"/>
+        <img src="catalogo/sobres_11_4.webp" alt="Sobres Figuritas Mundial 2026" class="h-36 md:h-44 object-contain self-end drop-shadow-xl" style="filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))"/>
+      </div>
+    </div>
+  </div>
+
+  <!-- Oferta destacada banner -->
+  <div class="bg-trophy-gold border-b-4 border-on-background px-4 py-3 flex items-center justify-center gap-4 flex-wrap">
+    <span style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:800;color:#181b23">⚡ OFERTA IMPERDIBLE:</span>
+    <span style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:700;color:#181b23">Álbum Tapa Dura + 50 sobres (350 figuritas) · Solo por tiempo limitado</span>
+    <button onclick="addToCart(1);nav('cart')" class="bg-on-background text-trophy-gold rounded-lg px-4 py-1.5 s-shadow-sm" style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:800;text-transform:uppercase;box-shadow:2px 2px 0 #FFF200">¡Lo quiero!</button>
+  </div>
+
+  <main class="max-w-screen-xl mx-auto px-4 md:px-12 py-8 flex flex-col md:flex-row gap-8">
+    <!-- Sidebar -->
+    <aside class="hidden md:block w-60 flex-shrink-0">
+      <div class="bg-clean-white rounded-xl p-5 c-border s-shadow sticky top-24">
+        <h2 style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900" class="mb-4 pb-3 border-b-2 border-primary">Filtros</h2>
+        <div class="mb-5">
+          <p style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:#6d7a6e" class="uppercase mb-3">Categorías</p>
+          <div class="space-y-2 text-sm">
+            <label class="flex items-center gap-2.5 cursor-pointer group"><input type="radio" name="cat" value="all" checked onchange="setFilter('all')" class="accent-primary w-4 h-4"/><span class="group-hover:text-primary transition-colors font-semibold">Todos los productos</span></label>
+            <label class="flex items-center gap-2.5 cursor-pointer group"><input type="radio" name="cat" value="combos" onchange="setFilter('combos')" class="accent-primary w-4 h-4"/><span class="group-hover:text-primary transition-colors">🎁 Combos Álbum+Sobres</span></label>
+            <label class="flex items-center gap-2.5 cursor-pointer group"><input type="radio" name="cat" value="albums" onchange="setFilter('albums')" class="accent-primary w-4 h-4"/><span class="group-hover:text-primary transition-colors">📗 Solo Álbum</span></label>
+            <label class="flex items-center gap-2.5 cursor-pointer group"><input type="radio" name="cat" value="figuritas" onchange="setFilter('figuritas')" class="accent-primary w-4 h-4"/><span class="group-hover:text-primary transition-colors">⚽ Solo Sobres/Figuritas</span></label>
+            <label class="flex items-center gap-2.5 cursor-pointer group"><input type="radio" name="cat" value="cromos" onchange="setFilter('cromos')" class="accent-primary w-4 h-4"/><span class="group-hover:text-primary transition-colors">🃏 Cromos Adrenalyn XL</span></label>
+          </div>
+        </div>
+        <div class="mb-5">
+          <p style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:#6d7a6e" class="uppercase mb-3">Precio (ARS)</p>
+          <div class="flex items-center gap-2">
+            <input type="number" id="pmin" placeholder="Min" oninput="renderProds()" class="inp text-center" style="padding:8px;font-size:12px"/>
+            <span class="text-outline">-</span>
+            <input type="number" id="pmax" placeholder="Max" oninput="renderProds()" class="inp text-center" style="padding:8px;font-size:12px"/>
+          </div>
+        </div>
+        <label class="flex items-center gap-2.5 cursor-pointer mb-5 text-sm">
+          <input type="checkbox" id="f-stock" onchange="renderProds()" class="accent-primary w-4 h-4 rounded"/>
+          <span class="font-semibold">Solo con stock</span>
+        </label>
+        <button onclick="clearF()" class="w-full rounded-lg py-2 text-sm s-border" style="font-family:'Lexend',sans-serif;font-weight:700;background:#e0e2ed;color:#181b23;transition:all .15s" onmouseover="this.style.background='#d8d9e4'" onmouseout="this.style.background='#e0e2ed'">Limpiar filtros</button>
+      </div>
+    </aside>
+
+    <!-- Products -->
+    <section class="flex-grow">
+      <div class="flex justify-between items-center mb-5 flex-wrap gap-3">
+        <div>
+          <h2 style="font-family:'Lexend',sans-serif;font-size:22px;font-weight:900" class="text-on-background">Catálogo <span class="text-primary">Mundial 2026</span></h2>
+          <p id="pcount" class="text-xs text-outline mt-0.5" style="font-family:'Lexend',sans-serif"></p>
+        </div>
+        <div class="flex gap-2">
+          <button class="md:hidden flex items-center gap-1 border-2 border-outline-variant rounded-lg px-3 py-2 text-sm bg-clean-white" style="font-family:'Lexend',sans-serif;font-weight:700" onclick="toggleMF()">
+            <span class="material-symbols-outlined" style="font-size:16px">tune</span> Filtros
+          </button>
+          <select id="sortsel" onchange="renderProds()" class="border-2 border-primary rounded-lg px-3 py-2 bg-clean-white text-sm focus:outline-none" style="font-family:'Lexend',sans-serif;font-weight:700">
+            <option value="feat">Destacados</option>
+            <option value="asc">Menor Precio</option>
+            <option value="desc">Mayor Precio</option>
+            <option value="az">A-Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Mobile filters -->
+      <div id="mfilt" class="md:hidden hidden bg-clean-white rounded-xl p-4 c-border mb-4 s-shadow-sm">
+        <div class="grid grid-cols-2 gap-2.5 text-sm">
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="catm" value="all" checked onchange="setFilter('all')" class="accent-primary w-4 h-4"/><span class="font-semibold">Todos</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="catm" value="combos" onchange="setFilter('combos')" class="accent-primary w-4 h-4"/><span>Combos</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="catm" value="albums" onchange="setFilter('albums')" class="accent-primary w-4 h-4"/><span>Solo Álbum</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="catm" value="figuritas" onchange="setFilter('figuritas')" class="accent-primary w-4 h-4"/><span>Sobres</span></label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="catm" value="cromos" onchange="setFilter('cromos')" class="accent-primary w-4 h-4"/><span>Cromos</span></label>
+        </div>
+      </div>
+
+      <div id="pgrid" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+      <div id="pempty" class="hidden text-center py-16 px-4">
+        <span class="material-symbols-outlined text-outline" style="font-size:60px">search_off</span>
+        <p style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:700" class="mt-4 text-on-surface-variant">Sin resultados</p>
+        <p class="text-sm text-outline mt-1">Probá con otros filtros.</p>
+        <button onclick="clearF()" class="mt-4 bg-primary text-clean-white rounded-lg px-6 py-2" style="font-family:'Lexend',sans-serif;font-weight:700">Limpiar filtros</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Trust badges -->
+  <div class="bg-on-background border-t-4 border-pitch-green py-10 px-4">
+    <div class="max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="flex flex-col items-center text-center gap-2">
+        <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:34px">local_shipping</span>
+        <p style="font-family:'Lexend',sans-serif;font-weight:700;color:#FFF200;font-size:13px">Envío en el día</p>
+        <p class="text-white/60 text-xs">Al AMBA comprando antes de las 14hs</p>
+      </div>
+      <div class="flex flex-col items-center text-center gap-2">
+        <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:34px">account_balance</span>
+        <p style="font-family:'Lexend',sans-serif;font-weight:700;color:#FFF200;font-size:13px">Transferencia bancaria</p>
+        <p class="text-white/60 text-xs">CBU/Alias disponible · Confirmación rápida</p>
+      </div>
+      <div class="flex flex-col items-center text-center gap-2">
+        <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:34px">verified_user</span>
+        <p style="font-family:'Lexend',sans-serif;font-weight:700;color:#FFF200;font-size:13px">Compra 100% segura</p>
+        <p class="text-white/60 text-xs">Distribuidor oficial de Panini Argentina</p>
+      </div>
+      <div class="flex flex-col items-center text-center gap-2">
+        <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:34px">autorenew</span>
+        <p style="font-family:'Lexend',sans-serif;font-weight:700;color:#FFF200;font-size:13px">30 días de cambio</p>
+        <p class="text-white/60 text-xs">Devoluciones sin preguntas</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-on-background text-white border-t border-white/10 py-10 px-4 md:px-12 mb-16 md:mb-0">
+    <div class="max-w-screen-xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8">
+      <div class="flex flex-col gap-3">
+        <div class="flex items-center gap-3">
+          <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-12 w-12 rounded-full border-2 border-trophy-gold object-cover"/>
+          <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase">Campeón Figus</span>
+        </div>
+        <p class="text-white/60 text-sm">Distribuidor oficial de figuritas<br>y artículos de colección · Argentina</p>
+        <a href="https://wa.me/541151244613" target="_blank" class="flex items-center gap-2 text-trophy-gold hover:text-white transition-colors text-sm mt-1" style="font-family:'Lexend',sans-serif;font-weight:700">
+          <span class="material-symbols-outlined mso-fill" style="font-size:18px">chat</span> +54 9 11 5124-4613
+        </a>
+      </div>
+      <div class="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
+        <a href="#" class="text-white/60 hover:text-white transition-colors">Cómo Comprar</a>
+        <a href="#" class="text-white/60 hover:text-white transition-colors">Preguntas Frecuentes</a>
+        <a href="#" class="text-white/60 hover:text-white transition-colors">Política de Devolución</a>
+        <a href="#" class="text-white/60 hover:text-white transition-colors">Quiénes Somos</a>
+        <a href="#" class="text-white/60 hover:text-white transition-colors">Blog</a>
+        <a href="https://wa.me/541151244613" target="_blank" class="text-white/60 hover:text-white transition-colors">Contacto</a>
+      </div>
+      <div class="text-white/40 text-xs text-right">
+        <p>© 2026 Campeón Figus Argentina.</p>
+        <p class="mt-1">Todos los derechos reservados.</p>
+        <a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" class="text-white/30 hover:text-white/50 transition-colors mt-2 block">Defensa del Consumidor</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- =========================== CARRITO ============================ -->
+<!-- ================================================================ -->
+<div id="pg-cart" class="pg fade-in">
+  <main class="max-w-[860px] mx-auto px-4 py-8 md:py-12 flex flex-col gap-6 mb-24 md:mb-0">
+    <header class="flex items-center justify-between border-b-2 border-outline-variant pb-4">
+      <h1 style="font-family:'Lexend',sans-serif;font-size:clamp(22px,4vw,30px);font-weight:900" class="flex items-center gap-3">
+        <span class="material-symbols-outlined mso-fill text-primary" style="font-size:32px">shopping_basket</span> Tu Carrito
+      </h1>
+      <button onclick="nav('catalog')" class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline" style="font-family:'Lexend',sans-serif">
+        Seguir comprando <span class="material-symbols-outlined" style="font-size:15px">arrow_forward</span>
+      </button>
+    </header>
+
+    <!-- Progress envío gratis -->
+    <div class="bg-surface-container rounded-xl p-5 border border-outline-variant relative overflow-hidden group">
+      <div class="absolute inset-0 bg-trophy-gold/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-xl"></div>
+      <div class="flex justify-between items-center mb-2 relative z-10">
+        <p id="progtext" class="text-sm font-semibold text-on-surface-variant"></p>
+        <span class="material-symbols-outlined mso-fill text-action-orange animate-bounce" style="font-size:20px">local_shipping</span>
+      </div>
+      <div class="h-4 bg-surface-dim rounded-full overflow-hidden border border-outline-variant relative z-10">
+        <div id="progfill" class="h-full bg-primary relative transition-all duration-700 prog-bar-inner" style="width:0%"></div>
+      </div>
+      <div class="flex justify-between mt-1.5" style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:600;color:#6d7a6e">
+        <span>$0</span><span>Meta: $130.000</span>
+      </div>
+    </div>
+
+    <!-- Empty -->
+    <div id="cart-empty" class="hidden text-center py-16">
+      <span class="material-symbols-outlined text-outline" style="font-size:70px">shopping_cart</span>
+      <p style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:800" class="mt-4 text-on-surface-variant">Tu carrito está vacío</p>
+      <p class="text-sm text-outline mt-1">¡Explorá nuestro catálogo y encontrá tus figuritas!</p>
+      <button onclick="nav('catalog')" class="mt-5 bg-trophy-gold text-on-background s-border s-shadow rounded-lg px-8 py-3" style="font-family:'Lexend',sans-serif;font-weight:900;font-size:14px">Ver catálogo ⚽</button>
+    </div>
+
+    <!-- Content -->
+    <div id="cart-cont" class="flex flex-col lg:flex-row gap-6">
+      <div id="cart-list" class="flex-1 flex flex-col gap-3"></div>
+      <!-- Summary -->
+      <aside class="w-full lg:w-72 flex-shrink-0">
+        <div class="bg-surface rounded-xl s-border s-shadow p-5 sticky top-24">
+          <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4 pb-2 border-b-2 border-outline-variant">Resumen</h2>
+          <div class="flex flex-col gap-2.5 text-sm mb-4">
+            <div class="flex justify-between text-on-surface-variant"><span id="ccount">Subtotal</span><span id="csubt" class="font-bold text-on-background">$0</span></div>
+            <div class="flex justify-between text-on-surface-variant"><span>Descuentos</span><span class="font-bold text-primary">$0</span></div>
+            <div class="flex justify-between text-on-surface-variant"><span>Envío est.</span><span id="cship" class="font-bold text-on-background">$5.500</span></div>
+            <div class="mt-2 pt-2 border-t border-dashed border-outline-variant flex gap-2">
+              <input type="text" placeholder="Código promo" class="flex-grow inp uppercase" style="padding:8px;font-size:12px;font-family:'Lexend',sans-serif;font-weight:700"/>
+              <button class="bg-on-background text-clean-white rounded-lg px-3 py-1 text-xs" style="font-family:'Lexend',sans-serif;font-weight:700">Aplicar</button>
+            </div>
+          </div>
+          <div class="border-t-4 border-on-background pt-3 mb-5">
+            <div class="flex justify-between items-center">
+              <span style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:900">Total</span>
+              <span id="ctotal" style="font-family:'Lexend',sans-serif;font-size:28px;font-weight:900">$0</span>
+            </div>
+            <p class="text-xs text-outline text-right mt-0.5" style="font-family:'Lexend',sans-serif;font-weight:600">Impuestos incluidos</p>
+          </div>
+          <button id="btn-checkout" onclick="nav('shipping')" class="w-full bg-trophy-gold text-on-background s-border s-shadow rounded-xl py-4 flex items-center justify-center gap-2 group hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#181b23] transition-all" style="font-family:'Lexend',sans-serif;font-size:16px;font-weight:900">
+            Continuar Compra <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+          </button>
+          <div class="mt-3 flex items-center justify-center gap-1.5 text-xs text-outline font-semibold">
+            <span class="material-symbols-outlined" style="font-size:14px">lock</span> Pago seguro garantizado
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- =========================== ENVÍO ============================== -->
+<!-- ================================================================ -->
+<div id="pg-shipping" class="pg fade-in">
+  <header class="w-full px-4 py-4 flex justify-center bg-pitch-green border-b-2 border-primary">
+    <div class="flex items-center gap-3">
+      <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-10 w-10 rounded-full border-2 border-trophy-gold object-cover"/>
+      <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase">Campeón Figus</span>
+    </div>
+  </header>
+  <main class="max-w-screen-lg mx-auto px-4 py-8 md:py-12 mb-24 md:mb-0">
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+      <!-- Left -->
+      <div class="w-full lg:w-3/5 flex flex-col gap-6">
+        <!-- Stepper -->
+        <div class="max-w-lg mx-auto w-full">
+          <div class="flex items-center w-full">
+            <div class="s-done flex flex-col items-center gap-1.5 w-1/3"><div class="s-icon"><span class="material-symbols-outlined mso-fill" style="font-size:15px">check</span></div><span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e">Carrito</span></div>
+            <div class="s-line done"></div>
+            <div class="s-active flex flex-col items-center gap-1.5 w-1/3"><div class="s-icon">2</div><span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700">Envío</span></div>
+            <div class="s-line"></div>
+            <div class="flex flex-col items-center gap-1.5 w-1/3" style="opacity:.45"><div class="s-icon">3</div><span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e">Pago</span></div>
+          </div>
+        </div>
+        <!-- Form -->
+        <div class="bg-clean-white rounded-xl p-6 md:p-8 s-border s-shadow">
+          <h2 style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:900" class="mb-6 pb-4 border-b-2 border-surface-variant">Información de Envío</h2>
+          <form id="ship-form" onsubmit="goToPay(event)" class="flex flex-col gap-5">
+            <div>
+              <p style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:#6d7a6e;text-transform:uppercase" class="mb-3">Contacto</p>
+              <div class="flex flex-col gap-3">
+                <div><label class="text-sm font-semibold block mb-1" for="s-email">Correo Electrónico *</label><input class="inp" id="s-email" placeholder="tu@email.com" required type="email"/></div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div><label class="text-sm font-semibold block mb-1" for="s-phone">Teléfono *</label><input class="inp" id="s-phone" placeholder="11 1234-5678" required type="tel"/></div>
+                  <div><label class="text-sm font-semibold block mb-1" for="s-dni">DNI *</label><input class="inp" id="s-dni" placeholder="Sin puntos" required type="text"/></div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:#6d7a6e;text-transform:uppercase" class="mb-3">Dirección de Entrega</p>
+              <div class="flex flex-col gap-3">
+                <div><label class="text-sm font-semibold block mb-1" for="s-name">Nombre Completo *</label><input class="inp" id="s-name" placeholder="Como figura en el DNI" required type="text"/></div>
+                <div><label class="text-sm font-semibold block mb-1" for="s-addr">Calle y Número *</label><input class="inp" id="s-addr" placeholder="Ej: Av. Corrientes 1234" required type="text"/></div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div><label class="text-sm font-semibold block mb-1" for="s-apt">Piso/Depto</label><input class="inp" id="s-apt" placeholder="Ej: 4B" type="text"/></div>
+                  <div><label class="text-sm font-semibold block mb-1" for="s-zip">Código Postal *</label><input class="inp" id="s-zip" placeholder="C1043AAZ" required type="text"/></div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="text-sm font-semibold block mb-1" for="s-prov">Provincia *</label>
+                    <select class="inp" id="s-prov" required>
+                      <option value="" disabled selected>Seleccioná...</option>
+                      <option>Ciudad Autónoma de Buenos Aires</option>
+                      <option>Buenos Aires</option>
+                      <option>Córdoba</option>
+                      <option>Santa Fe</option>
+                      <option>Mendoza</option>
+                      <option>Tucumán</option>
+                      <option>Río Negro</option>
+                      <option>Neuquén</option>
+                      <option>Entre Ríos</option>
+                      <option>Salta</option>
+                      <option>Misiones</option>
+                      <option>Chaco</option>
+                      <option>Otra</option>
+                    </select>
+                  </div>
+                  <div><label class="text-sm font-semibold block mb-1" for="s-city">Ciudad *</label><input class="inp" id="s-city" placeholder="Ej: Rosario" required type="text"/></div>
+                </div>
+              </div>
+            </div>
+            <div class="pt-4 border-t-2 border-surface-variant flex items-center justify-between flex-wrap gap-3">
+              <button type="button" onclick="nav('cart')" class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline" style="font-family:'Lexend',sans-serif">
+                <span class="material-symbols-outlined" style="font-size:15px">arrow_back</span> Volver al carrito
+              </button>
+              <button type="submit" class="bg-trophy-gold text-on-background s-border s-shadow rounded-xl px-8 py-3 flex items-center gap-2 hover:-translate-y-0.5 transition-all" style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:900;text-transform:uppercase">
+                Continuar al Pago <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Right: mini cart -->
+      <aside class="w-full lg:w-2/5 bg-surface-container-lowest rounded-xl p-5 border border-outline-variant sticky top-24">
+        <h3 style="font-family:'Lexend',sans-serif;font-size:16px;font-weight:900" class="mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-pitch-green mso-fill">shopping_bag</span> Resumen del Pedido
+        </h3>
+        <div id="ship-items" class="flex flex-col gap-3 mb-4"></div>
+        <div class="flex flex-col gap-2 mb-3 pb-3 border-b-2 border-on-background text-sm">
+          <div class="flex justify-between"><span class="text-on-surface-variant">Subtotal</span><span id="ship-subt" class="font-bold">$0</span></div>
+          <div class="flex justify-between"><span class="text-on-surface-variant">Envío</span><span id="ship-ship" class="font-bold text-primary italic text-xs">Se calcula al finalizar</span></div>
+        </div>
+        <div class="flex justify-between items-center">
+          <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;text-transform:uppercase">Total</span>
+          <span id="ship-tot" style="font-family:'Lexend',sans-serif;font-size:22px;font-weight:900;color:#0D6B48">$0</span>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- =========================== PAGO =============================== -->
+<!-- ================================================================ -->
+<div id="pg-payment" class="pg fade-in">
+  <header class="w-full px-4 py-4 flex justify-center bg-clean-white border-b border-outline-variant">
+    <div class="flex items-center gap-3">
+      <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-10 w-10 rounded-full border-2 border-pitch-green object-cover"/>
+      <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;color:#0D6B48;font-style:italic;text-transform:uppercase">Campeón Figus</span>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5 mb-24 md:mb-0">
+    <!-- Stepper -->
+    <div class="max-w-lg mx-auto w-full mb-2">
+      <div class="flex items-center w-full">
+        <div class="s-done flex flex-col items-center gap-1.5 w-1/3"><div class="s-icon"><span class="material-symbols-outlined mso-fill" style="font-size:15px">check</span></div><span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e">Carrito</span></div>
+        <div class="s-line done"></div>
+        <div class="s-done flex flex-col items-center gap-1.5 w-1/3"><div class="s-icon"><span class="material-symbols-outlined mso-fill" style="font-size:15px">check</span></div><span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e">Envío</span></div>
+        <div class="s-line done"></div>
+        <div class="s-active flex flex-col items-center gap-1.5 w-1/3"><div class="s-icon">3</div><span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700">Pago</span></div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined mso-fill text-pitch-green" style="font-size:28px">account_balance</span>
+      <h1 style="font-family:'Lexend',sans-serif;font-size:clamp(22px,5vw,30px);font-weight:900">Pago por Transferencia</h1>
+    </div>
+
+    <p class="text-on-surface-variant text-sm leading-relaxed">
+      Realizá la transferencia a la cuenta de abajo. Tu pedido <strong>no se procesa</strong> hasta confirmar el pago. Subí el comprobante para agilizar el proceso.
+    </p>
+
+    <!-- Bank card -->
+    <div class="bg-clean-white rounded-xl border border-outline-variant overflow-hidden s-shadow-sm">
+      <div class="bg-pitch-green px-5 py-3 flex items-center gap-3">
+        <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:22px">account_balance</span>
+        <span style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:800;color:#FFF200;text-transform:uppercase;letter-spacing:.04em">Datos bancarios</span>
+      </div>
+      <div class="p-5 flex flex-col gap-3">
+        <div class="flex justify-between items-center py-2 border-b border-surface-variant">
+          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Titular</span>
+          <span class="font-bold text-sm">Campeón Figus</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-surface-variant">
+          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Banco</span>
+          <span class="font-bold text-sm">Mercado Pago / Transferencia</span>
+        </div>
+        <div class="flex justify-between items-center py-2 border-b border-surface-variant">
+          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">CVU/CBU</span>
+          <div class="flex items-center gap-2">
+            <span id="cbu-val" style="font-family:'Lexend',sans-serif;font-weight:800;color:#0D6B48;font-size:13px;letter-spacing:.02em">0000003100073724756015</span>
+            <button onclick="cpyText('0000003100073724756015','CVU copiado ✓')" class="p-1.5 rounded text-outline hover:text-pitch-green hover:bg-surface-container transition-all" title="Copiar CBU">
+              <span class="material-symbols-outlined" style="font-size:17px">content_copy</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex justify-between items-center py-2">
+          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Alias</span>
+          <div class="flex items-center gap-2">
+            <span style="font-family:'Lexend',sans-serif;font-weight:800;color:#0D6B48;font-size:13px;text-transform:uppercase">CAMPEON.FIGUS</span>
+            <button onclick="cpyText('CAMPEON.FIGUS','Alias copiado ✓')" class="p-1.5 rounded text-outline hover:text-pitch-green hover:bg-surface-container transition-all" title="Copiar Alias">
+              <span class="material-symbols-outlined" style="font-size:17px">content_copy</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WhatsApp tip -->
+    <div class="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
+      <span class="material-symbols-outlined mso-fill text-pitch-green flex-shrink-0" style="font-size:22px">tips_and_updates</span>
+      <p class="text-sm text-pitch-green leading-relaxed">
+        <strong>¿Realizaste la transferencia?</strong> Envianos el comprobante por WhatsApp para confirmar tu pedido más rápido.<br>
+        <a href="https://wa.me/541151244613?text=Hola!%20Realicé%20la%20transferencia%20para%20mi%20pedido." target="_blank" class="inline-flex items-center gap-1 mt-2 font-bold underline hover:no-underline">
+          <span class="material-symbols-outlined mso-fill" style="font-size:15px">chat</span> Enviar por WhatsApp → +54 9 11 5124-4613
+        </a>
+      </p>
+    </div>
+
+    <!-- Upload zone -->
+    <div id="upload-zone" class="bg-surface-container-low border-2 border-dashed border-primary rounded-xl p-8 flex flex-col items-center gap-3 transition-all cursor-pointer hover:bg-surface-container" onclick="document.getElementById('fileinput').click()">
+      <span class="material-symbols-outlined text-pitch-green" style="font-size:44px">upload_file</span>
+      <div class="text-center">
+        <p style="font-family:'Lexend',sans-serif;font-size:16px;font-weight:900" class="text-on-background">Subí tu comprobante</p>
+        <p class="text-on-surface-variant text-sm mt-0.5">JPG, PNG o PDF · Máximo 5MB</p>
+      </div>
+      <div id="fname" class="text-pitch-green font-bold text-sm hidden"></div>
+      <button type="button" class="bg-clean-white border-2 border-pitch-green text-pitch-green rounded-lg px-6 py-2.5 text-sm hover:bg-surface-container-highest transition-colors" style="font-family:'Lexend',sans-serif;font-weight:700">
+        Seleccionar Archivo
+      </button>
+      <input type="file" id="fileinput" accept=".jpg,.jpeg,.png,.pdf" class="hidden" onchange="handleFile(event)"/>
+    </div>
+
+    <!-- Total -->
+    <div class="bg-surface-container-high rounded-xl p-4 flex justify-between items-center border border-outline-variant">
+      <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900">Total a Pagar:</span>
+      <span id="pay-total" style="font-family:'Lexend',sans-serif;font-size:26px;font-weight:900">$0</span>
+    </div>
+
+    <!-- CTA -->
+    <button onclick="finalizeOrder()" class="w-full bg-trophy-gold text-on-background s-border s-shadow rounded-xl py-4 flex items-center justify-center gap-3 hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#181b23] transition-all uppercase" style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900;letter-spacing:.03em">
+      <span class="material-symbols-outlined mso-fill" style="font-size:22px">check_circle</span> Finalizar Pedido
+    </button>
+    <div class="flex items-center justify-center gap-2 text-on-surface-variant text-sm font-semibold -mt-1">
+      <span class="material-symbols-outlined" style="font-size:16px">lock</span> Pago 100% Seguro
+    </div>
+    <button onclick="nav('shipping')" class="text-primary text-sm font-semibold flex items-center justify-center gap-1 hover:underline" style="font-family:'Lexend',sans-serif">
+      <span class="material-symbols-outlined" style="font-size:15px">arrow_back</span> Volver a datos de envío
+    </button>
+  </main>
+</div>
+
+
+<!-- ================================================================ -->
+<!-- =========================== ÉXITO ============================== -->
+<!-- ================================================================ -->
+<div id="pg-success" class="pg fade-in">
+  <main class="min-h-screen flex flex-col items-center justify-center px-4 py-16">
+    <div class="bg-clean-white rounded-2xl s-border s-shadow p-10 max-w-md w-full flex flex-col items-center gap-6 text-center">
+      <div class="w-24 h-24 rounded-full bg-trophy-gold s-border flex items-center justify-center" style="box-shadow:4px 4px 0 #FFF200">
+        <span class="material-symbols-outlined mso-fill text-pitch-green" style="font-size:54px">check_circle</span>
+      </div>
+      <div>
+        <h1 style="font-family:'Lexend',sans-serif;font-size:30px;font-weight:900" class="text-on-background">¡Pedido Confirmado! 🎉</h1>
+        <p class="text-on-surface-variant mt-2 text-sm leading-relaxed">Tu pedido fue recibido. Lo procesamos una vez que confirmemos la transferencia. Te contactaremos por WhatsApp o email.</p>
+      </div>
+      <div class="bg-surface-container rounded-xl p-5 w-full text-left space-y-2.5 text-sm">
+        <div class="flex justify-between"><span class="text-on-surface-variant">N° de Orden</span><span id="ord-num" style="font-family:'Lexend',sans-serif;font-weight:800">#CF-0001</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Estado</span><span class="text-primary font-bold" style="font-family:'Lexend',sans-serif">Pendiente acreditación</span></div>
+        <div class="flex justify-between"><span class="text-on-surface-variant">Total</span><span id="ord-total" style="font-family:'Lexend',sans-serif;font-weight:900">$0</span></div>
+      </div>
+      <!-- WhatsApp button -->
+      <a href="https://wa.me/541151244613?text=Hola!%20Realicé%20mi%20pedido%20en%20Campeón%20Figus." target="_blank"
+        class="w-full flex items-center justify-center gap-2 bg-pitch-green text-white rounded-xl py-3.5 s-border" style="font-family:'Lexend',sans-serif;font-size:15px;font-weight:900;box-shadow:4px 4px 0 #181b23">
+        <span class="material-symbols-outlined mso-fill" style="font-size:20px">chat</span> Contactar por WhatsApp
+      </a>
+      <button onclick="startOver()" class="w-full bg-trophy-gold text-on-background rounded-xl py-3.5 s-border s-shadow hover:-translate-y-0.5 transition-transform flex items-center justify-center gap-2" style="font-family:'Lexend',sans-serif;font-size:15px;font-weight:900">
+        <span class="material-symbols-outlined mso-fill">home</span> Volver al Catálogo
+      </button>
+    </div>
+  </main>
+</div>
+
+
+<!-- ===== BOTTOM NAV (mobile) ===== -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-2 py-2.5 bg-surface-container-highest md:hidden z-50 rounded-t-2xl border-t-2 border-outline-variant" style="box-shadow:0 -2px 12px rgba(0,0,0,.08)">
+  <button onclick="nav('catalog');setFilter('all')" class="flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
+    <span class="material-symbols-outlined" style="font-size:22px">style</span>
+    <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Catálogo</span>
+  </button>
+  <a href="https://wa.me/541151244613" target="_blank" class="flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
+    <span class="material-symbols-outlined mso-fill" style="font-size:22px;color:#0D6B48">chat</span>
+    <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">WhatsApp</span>
+  </a>
+  <button onclick="nav('cart')" class="relative flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
+    <span class="material-symbols-outlined mso-fill" style="font-size:22px">shopping_basket</span>
+    <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Carrito</span>
+    <span id="badge-bn" class="hidden absolute top-1 right-2 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-surface-container-highest" style="font-family:'Lexend',sans-serif">0</span>
+  </button>
+  <button class="flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
+    <span class="material-symbols-outlined" style="font-size:22px">person</span>
+    <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Cuenta</span>
+  </button>
+</nav>
+
+
+<!-- ================================================================ -->
+<!-- ========================== SCRIPTS ============================= -->
+<!-- ================================================================ -->
+<script>
+// ========== PRODUCTS (con imágenes reales) ==========
+const PRODUCTS = [
+  // ---- COMBOS (Álbum + sobres) ----
+  {
+    id:1, name:'Álbum Tapa Dura + 50 sobres de figuritas', cat:'combos',
+    img:'catalogo/album_tapa_dura-sobres.webp', price:129999,
+    badge:'🔥 SÚPER COMBO', badgeColor:'bg-error text-on-error',
+    stock:true, desc:'El combo más completo. Álbum tapa dura oficial PANINI + 350 figuritas (50 sobres × 7 figus).',
+    highlight:true
+  },
+  {
+    id:2, name:'Álbum Tapa Dura + 100 sobres de figuritas', cat:'combos',
+    img:'catalogo/album_tapa_dura-sobres.webp', price:239999,
+    badge:'⭐ MEGA COMBO', badgeColor:'bg-trophy-gold text-on-background',
+    stock:true, desc:'700 figuritas de una vez. Para el coleccionista serio. Álbum tapa dura + 100 sobres.',
+    highlight:true
+  },
+  {
+    id:3, name:'Álbum Dorado + 7 sobres de figuritas', cat:'combos',
+    img:'catalogo/album_dorado-sobres.webp', price:39999,
+    badge:'✨ EDICIÓN ORO', badgeColor:'bg-trophy-gold text-on-background',
+    stock:true, desc:'Álbum edición dorada coleccionista + 7 sobres para arrancar tu colección.',
+    highlight:true
+  },
+  {
+    id:4, name:'Álbum Tapa Blanda + 7.5 sobres de figuritas', cat:'combos',
+    img:'catalogo/album_sobres_7_5.webp', price:25999,
+    badge:'👋 IDEAL PARA EMPEZAR', badgeColor:'bg-primary text-on-primary',
+    stock:true, desc:'El combo ideal para empezar. Álbum oficial + 7 sobres y ½ (pack de regalo).',
+    highlight:false
+  },
+  // ---- SOLO ÁLBUMES ----
+  {
+    id:5, name:'Álbum Tapa Dura FIFA World Cup 2026', cat:'albums',
+    img:'catalogo/album_tapa_dura_1.webp', price:18999,
+    badge:'TAPA DURA', badgeColor:'bg-primary text-on-primary',
+    stock:true, desc:'Álbum oficial PANINI de tapa dura. Tapa rígida premium, 112 páginas, 980 espacios.'
+  },
+  {
+    id:6, name:'Álbum Dorado FIFA World Cup 2026', cat:'albums',
+    img:'catalogo/album_dorado_1.webp', price:22999,
+    badge:'✨ EDICIÓN ORO', badgeColor:'bg-trophy-gold text-on-background',
+    stock:true, desc:'Álbum edición especial dorada. Tapa exclusiva coleccionista. Edición limitada.'
+  },
+  {
+    id:7, name:'Álbum Tapa Blanda FIFA World Cup 2026', cat:'albums',
+    img:'catalogo/album_83_3.webp', price:12999,
+    badge:null, badgeColor:'',
+    stock:true, desc:'Álbum oficial PANINI tapa blanda. La opción más accesible para empezar tu colección del Mundial.'
+  },
+  // ---- SOBRES / FIGURITAS ----
+  {
+    id:8, name:'Pack x11 sobres de figuritas (77 figus)', cat:'figuritas',
+    img:'catalogo/sobres_11_4.webp', price:19999,
+    badge:'🎯 MÁS VENDIDO', badgeColor:'bg-action-orange text-white',
+    stock:true, desc:'11 sobres sellados de fábrica. 77 figuritas oficiales del Mundial FIFA 2026 PANINI.'
+  },
+  {
+    id:9, name:'Pack x25 sobres de figuritas (175 figus)', cat:'figuritas',
+    img:'catalogo/sobres_11_4.webp', price:44999,
+    badge:'⚡ OFERTA', badgeColor:'bg-error text-on-error',
+    stock:true, desc:'25 sobres cerrados. 175 figuritas para avanzar rápido en tu álbum del Mundial 2026.'
+  },
+  {
+    id:10, name:'Pack x50 sobres de figuritas (350 figus)', cat:'figuritas',
+    img:'catalogo/sobres_11_4.webp', price:84999,
+    badge:'🏆 MEJOR PRECIO/FIGUITA', badgeColor:'bg-trophy-gold text-on-background',
+    stock:true, desc:'50 sobres de figuritas. El mejor precio por figurita del mercado. Para completar el álbum.'
+  },
+  // ---- CROMOS ADRENALYN XL ----
+  {
+    id:11, name:'Adrenalyn XL Mundial 2026 - Pack x12 sobres', cat:'cromos',
+    img:'catalogo/sobres_11_4.webp', price:41999,
+    badge:'🥇 OFICIAL PANINI', badgeColor:'bg-primary text-on-primary',
+    stock:true, desc:'Cromos oficiales Adrenalyn XL del Mundial FIFA 2026. 12 sobres · Edición coleccionista Panini.'
+  },
+];
+
+// ========== CART ==========
+let cart = JSON.parse(localStorage.getItem('cf-cart2')||'[]');
+let curFilter = 'all';
+let srch = '';
+
+function saveCart(){localStorage.setItem('cf-cart2',JSON.stringify(cart))}
+function cartTotal(){return cart.reduce((s,i)=>s+i.price*i.qty,0)}
+function cartCount(){return cart.reduce((s,i)=>s+i.qty,0)}
+function fmt(n){return '$'+n.toLocaleString('es-AR')}
+
+// ========== NAVIGATION ==========
+function nav(pg){
+  document.querySelectorAll('.pg').forEach(e=>{e.classList.remove('active');e.classList.remove('fade-in')});
+  const el=document.getElementById('pg-'+pg);
+  if(el){el.classList.add('active');setTimeout(()=>el.classList.add('fade-in'),10)}
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(pg==='cart'){renderCart()}
+  if(pg==='shipping'){renderShipSummary()}
+  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(cartTotal()+(cartTotal()>=130000?0:5500))}
+}
+
+// ========== PRODUCTS ==========
+function setFilter(f){
+  curFilter=f;
+  document.querySelectorAll('input[name="cat"],input[name="catm"]').forEach(r=>r.checked=r.value===f);
+  renderProds();
+}
+
+function doSearch(){
+  srch=(document.getElementById('srch-d')?.value||document.getElementById('srch-m')?.value||'').toLowerCase();
+  renderProds();
+}
+
+function clearF(){
+  curFilter='all';srch='';
+  document.querySelectorAll('input[name="cat"],input[name="catm"]').forEach(r=>r.checked=r.value==='all');
+  ['srch-d','srch-m','pmin','pmax'].forEach(id=>{const e=document.getElementById(id);if(e)e.value=''});
+  const fs=document.getElementById('f-stock');if(fs)fs.checked=false;
+  renderProds();
+}
+
+function renderProds(){
+  const grid=document.getElementById('pgrid');
+  const empty=document.getElementById('pempty');
+  const count=document.getElementById('pcount');
+  const sort=document.getElementById('sortsel')?.value||'feat';
+  const onlyStock=document.getElementById('f-stock')?.checked;
+  const pmin=parseFloat(document.getElementById('pmin')?.value)||0;
+  const pmax=parseFloat(document.getElementById('pmax')?.value)||Infinity;
+
+  let items=PRODUCTS.filter(p=>{
+    if(curFilter!=='all'&&p.cat!==curFilter)return false;
+    if(onlyStock&&!p.stock)return false;
+    if(p.price<pmin||p.price>pmax)return false;
+    if(srch&&!p.name.toLowerCase().includes(srch)&&!p.desc.toLowerCase().includes(srch))return false;
+    return true;
+  });
+
+  if(sort==='asc')items.sort((a,b)=>a.price-b.price);
+  else if(sort==='desc')items.sort((a,b)=>b.price-a.price);
+  else if(sort==='az')items.sort((a,b)=>a.name.localeCompare(b.name));
+  else items.sort((a,b)=>(b.highlight?1:0)-(a.highlight?1:0));
+
+  count.textContent=`${items.length} producto${items.length!==1?'s':''} encontrado${items.length!==1?'s':''}`;
+
+  if(!items.length){
+    grid.innerHTML='';empty.classList.remove('hidden');return;
+  }
+  empty.classList.add('hidden');
+
+  grid.innerHTML=items.map(p=>`
+    <article class="bg-clean-white rounded-xl p-4 prod-card flex flex-col h-full relative c-border ${p.highlight?'gold-card':''} cursor-pointer" onclick="">
+      ${p.badge?`<div class="absolute top-2 left-2 z-10"><span class="${p.badgeColor} text-xs px-2 py-0.5 rounded-sm uppercase" style="font-family:'Lexend',sans-serif;font-weight:700;font-size:10px;letter-spacing:.04em">${p.badge}</span></div>`:''}
+      <div class="aspect-square bg-surface-container-low rounded-lg mb-3 overflow-hidden flex items-center justify-center p-2 ${!p.stock?'opacity-50 grayscale':''}">
+        <img src="${p.img}" alt="${p.name}" class="prod-img max-h-full max-w-full object-contain" loading="lazy"/>
+      </div>
+      <div class="flex-grow flex flex-col">
+        <p style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.07em" class="mb-1">${getCatLabel(p.cat)}</p>
+        <h3 style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:800;line-height:1.25" class="text-on-background mb-1.5">${p.name}</h3>
+        <p class="text-on-surface-variant text-xs line-clamp-2 mb-3 flex-grow leading-relaxed">${p.desc}</p>
+        <div class="mt-auto pt-3 border-t border-surface-variant flex items-end justify-between gap-2">
+          <div>
+            <span class="block mb-0.5" style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:${p.stock?'#006d37':'#ba1a1a'}">${p.stock?'En Stock':'Sin Stock'}</span>
+            <span style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900">${fmt(p.price)} <span style="font-size:11px;font-weight:400;color:#6d7a6e">ARS</span></span>
+          </div>
+          ${p.stock
+            ?`<button onclick="event.stopPropagation();addToCart(${p.id})" 
+                class="bg-trophy-gold text-on-background rounded-lg border-2 border-on-background flex items-center gap-1 px-2.5 py-2 hover:s-shadow hover:-translate-y-0.5 transition-all"
+                style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:800;box-shadow:2px 2px 0 #181b23;min-width:38px">
+                <span class="material-symbols-outlined mso-fill" style="font-size:16px">add_shopping_cart</span>
+                <span class="hidden md:inline">Agregar</span>
+              </button>`
+            :`<button disabled class="rounded-lg px-2.5 py-2 cursor-not-allowed" style="background:#e0e2ed;color:#6d7a6e;border:2px solid #bccabc;min-width:38px">
+                <span class="material-symbols-outlined" style="font-size:16px">remove_shopping_cart</span>
+              </button>`
+          }
+        </div>
+      </div>
+    </article>`).join('');
+}
+
+function getCatLabel(c){return{combos:'🎁 Combo',albums:'📗 Álbum',figuritas:'⚽ Sobres',cromos:'🃏 Cromos'}[c]||c}
+
+// ========== CART OPERATIONS ==========
+function addToCart(id){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p||!p.stock)return;
+  const ex=cart.find(x=>x.id===id);
+  if(ex)ex.qty++;
+  else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:1});
+  saveCart();updateBadges();
+  showToast('✅ '+p.name.substring(0,30)+'...');
+}
+
+function rmFromCart(id){cart=cart.filter(x=>x.id!==id);saveCart();updateBadges();renderCart()}
+function chgQty(id,d){
+  const it=cart.find(x=>x.id===id);if(!it)return;
+  it.qty=Math.max(1,it.qty+d);
+  if(it.qty<1){rmFromCart(id);return}
+  saveCart();updateBadges();renderCart();
+}
+
+function updateBadges(){
+  const n=cartCount();const show=n>0;
+  ['badge-d','badge-m','badge-bn'].forEach(id=>{
+    const e=document.getElementById(id);
+    if(e){e.textContent=n;e.classList.toggle('hidden',!show)}
+  });
+}
+
+function renderCart(){
+  const list=document.getElementById('cart-list');
+  const empty=document.getElementById('cart-empty');
+  const cont=document.getElementById('cart-cont');
+  if(!list)return;
+  if(!cart.length){
+    empty.classList.remove('hidden');cont.style.display='none';
+    updateProg(0);return;
+  }
+  empty.classList.add('hidden');cont.style.display='';
+  const total=cartTotal();const cnt=cartCount();
+  list.innerHTML=cart.map(it=>`
+    <article class="bg-clean-white rounded-xl border border-outline-variant p-4 flex gap-4 items-center hover:shadow-[4px_4px_0_#181b23] transition-shadow duration-200">
+      <div class="w-20 h-20 md:w-24 md:h-24 bg-surface-container-low rounded-lg flex-shrink-0 flex items-center justify-center p-1 overflow-hidden border border-outline-variant">
+        <img src="${it.img}" alt="${it.name}" class="max-h-full max-w-full object-contain"/>
+      </div>
+      <div class="flex-grow min-w-0">
+        <h3 style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:800;line-height:1.25" class="text-on-background line-clamp-2 mb-1">${it.name}</h3>
+        <p style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900" class="text-on-background mt-1">${fmt(it.price*it.qty)}</p>
+      </div>
+      <div class="flex flex-col items-end gap-3 flex-shrink-0">
+        <button onclick="rmFromCart(${it.id})" class="text-outline hover:text-error transition-colors p-1 rounded hover:bg-error-container"><span class="material-symbols-outlined" style="font-size:20px">delete</span></button>
+        <div class="flex items-center border-2 border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest">
+          <button onclick="chgQty(${it.id},-1)" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors font-bold text-lg">−</button>
+          <span style="font-family:'Lexend',sans-serif;font-weight:800;font-size:14px" class="w-10 text-center border-x-2 border-outline-variant py-1">${it.qty}</span>
+          <button onclick="chgQty(${it.id},1)" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors font-bold text-lg">+</button>
+        </div>
+      </div>
+    </article>`).join('');
+
+  const ship=total>=130000?0:5500;
+  document.getElementById('ccount').textContent=`Subtotal (${cnt} item${cnt!==1?'s':''})`;
+  document.getElementById('csubt').textContent=fmt(total);
+  document.getElementById('cship').textContent=ship===0?'¡Gratis! 🎉':fmt(ship);
+  document.getElementById('ctotal').textContent=fmt(total+ship);
+  updateProg(total);
+}
+
+function updateProg(total){
+  const THRESH=130000;
+  const pct=Math.min(100,(total/THRESH)*100);
+  const fill=document.getElementById('progfill');
+  const txt=document.getElementById('progtext');
+  if(!fill||!txt)return;
+  fill.style.width=pct+'%';
+  if(total>=THRESH){
+    txt.innerHTML='🎉 <strong style="color:#006d37">¡Tenés envío gratis!</strong> Aproveché el beneficio.';
+    fill.style.background='#006d37';
+  }else{
+    const rem=THRESH-total;
+    txt.innerHTML=`Estás a <strong style="color:#006d37">${fmt(rem)}</strong> de tener <strong style="color:#E67E22">ENVÍO GRATIS</strong>`;
+  }
+}
+
+// ========== SHIPPING SUMMARY ==========
+function renderShipSummary(){
+  const list=document.getElementById('ship-items');
+  if(!list)return;
+  list.innerHTML=cart.map(it=>`
+    <div class="flex items-start gap-3 pb-3 border-b border-surface-variant last:border-0 last:pb-0">
+      <div class="w-14 h-16 bg-surface-container border border-outline-variant rounded-lg flex items-center justify-center overflow-hidden p-1 flex-shrink-0">
+        <img src="${it.img}" alt="${it.name}" class="max-h-full max-w-full object-contain"/>
+      </div>
+      <div class="flex-grow">
+        <p style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:800;line-height:1.3" class="text-on-background">${it.name}</p>
+        <p class="text-on-surface-variant text-xs mt-0.5">Cant: ${it.qty}</p>
+        <p style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:800;color:#0D6B48" class="mt-1">${fmt(it.price*it.qty)}</p>
+      </div>
+    </div>`).join('');
+  const t=cartTotal();
+  document.getElementById('ship-subt').textContent=fmt(t);
+  document.getElementById('ship-tot').textContent=fmt(t);
+}
+
+function goToPay(e){e.preventDefault();nav('payment')}
+
+// ========== PAYMENT ==========
+function cpyText(txt,msg){
+  navigator.clipboard.writeText(txt).catch(()=>{}).finally(()=>showToast(msg));
+}
+
+function handleFile(e){
+  const f=e.target.files[0];if(!f)return;
+  const d=document.getElementById('fname');
+  if(d){d.textContent='✅ '+f.name;d.classList.remove('hidden')}
+  const z=document.getElementById('upload-zone');
+  if(z){z.style.borderColor='#006d37';z.style.background='#f0fdf4'}
+  showToast('Comprobante cargado ✓');
+}
+
+function finalizeOrder(){
+  if(!cart.length){showToast('Tu carrito está vacío');return}
+  const num='#CF-'+Math.floor(1000+Math.random()*9000);
+  const grand=cartTotal()+(cartTotal()>=130000?0:5500);
+  document.getElementById('ord-num').textContent=num;
+  document.getElementById('ord-total').textContent=fmt(grand);
+  nav('success');
+  launchConfetti();
+  setTimeout(()=>{cart=[];saveCart();updateBadges()},1200);
+}
+
+function startOver(){nav('catalog');renderProds()}
+
+// ========== CONFETTI ==========
+function launchConfetti(){
+  const cols=['#FFF200','#006d37','#0D6B48','#ba1a1a','#E67E22','#fff'];
+  for(let i=0;i<60;i++){
+    const c=document.createElement('div');c.className='confetti';
+    c.style.left=Math.random()*100+'vw';c.style.top='80px';
+    c.style.background=cols[Math.floor(Math.random()*cols.length)];
+    c.style.animationDelay=(Math.random()*.9)+'s';
+    c.style.animationDuration=(1.3+Math.random()*.8)+'s';
+    c.style.transform='rotate('+(Math.random()*360)+'deg)';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),2800);
+  }
+}
+
+// ========== TOAST ==========
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(window._tt);
+  window._tt=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// ========== MOBILE TOGGLES ==========
+function toggleMSearch(){
+  const b=document.getElementById('msearch');
+  b.classList.toggle('hidden');
+  if(!b.classList.contains('hidden'))document.getElementById('srch-m').focus();
+}
+function toggleMF(){document.getElementById('mfilt').classList.toggle('hidden')}
+
+// ========== INIT ==========
+document.addEventListener('DOMContentLoaded',()=>{
+  updateBadges();
+  renderProds();
+});
+</script>
+</body>
+</html>
