@@ -38,10 +38,13 @@ New product images: place files in `catalogo/` and use relative path (e.g. `cata
 
 ```bash
 npx vercel login          # una sola vez, abre el navegador
-./deploy-vercel.sh          # o: npx vercel --prod --yes
+./deploy-vercel.sh        # o: npx vercel --prod --yes
 ```
 
-Si usás token en CI/Cloud Agent: `export VERCEL_TOKEN=...` y luego `npx vercel --prod --yes --token "$VERCEL_TOKEN"`.
+**Producción actual:** https://workspace-rho-ochre-24.vercel.app  
+**Admin:** https://workspace-rho-ochre-24.vercel.app/admin
+
+El backend Flask corre en `api/index.py` (ver `vercel.json`). Si `VERCEL_TOKEN` en el entorno es inválido, el script lo ignora y usa la sesión de `npx vercel login`.
 
 Configurá estas variables de entorno en el dashboard de Vercel (o al primer deploy):
 
