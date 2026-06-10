@@ -749,83 +749,30 @@
 <!-- ========================== SCRIPTS ============================= -->
 <!-- ================================================================ -->
 <script>
-// ========== PRODUCTS (con imágenes reales) ==========
-const PRODUCTS = [
-  // ---- COMBOS (Álbum + sobres) ----
-  {
-    id:1, name:'Álbum Tapa Dura + 50 sobres de figuritas', cat:'combos',
-    img:'catalogo/album_tapa_dura-sobres.webp', price:129999,
-    badge:'🔥 SÚPER COMBO', badgeColor:'bg-error text-on-error',
-    stock:true, desc:'El combo más completo. Álbum tapa dura oficial PANINI + 350 figuritas (50 sobres × 7 figus).',
-    highlight:true
-  },
-  {
-    id:2, name:'Álbum Tapa Dura + 100 sobres de figuritas', cat:'combos',
-    img:'catalogo/album_tapa_dura-sobres.webp', price:239999,
-    badge:'⭐ MEGA COMBO', badgeColor:'bg-trophy-gold text-on-background',
-    stock:true, desc:'700 figuritas de una vez. Para el coleccionista serio. Álbum tapa dura + 100 sobres.',
-    highlight:true
-  },
-  {
-    id:3, name:'Álbum Dorado + 7 sobres de figuritas', cat:'combos',
-    img:'catalogo/album_dorado-sobres.webp', price:39999,
-    badge:'✨ EDICIÓN ORO', badgeColor:'bg-trophy-gold text-on-background',
-    stock:true, desc:'Álbum edición dorada coleccionista + 7 sobres para arrancar tu colección.',
-    highlight:true
-  },
-  {
-    id:4, name:'Álbum Tapa Blanda + 7.5 sobres de figuritas', cat:'combos',
-    img:'catalogo/album_sobres_7_5.webp', price:25999,
-    badge:'👋 IDEAL PARA EMPEZAR', badgeColor:'bg-primary text-on-primary',
-    stock:true, desc:'El combo ideal para empezar. Álbum oficial + 7 sobres y ½ (pack de regalo).',
-    highlight:false
-  },
-  // ---- SOLO ÁLBUMES ----
-  {
-    id:5, name:'Álbum Tapa Dura FIFA World Cup 2026', cat:'albums',
-    img:'catalogo/album_tapa_dura_1.webp', price:18999,
-    badge:'TAPA DURA', badgeColor:'bg-primary text-on-primary',
-    stock:true, desc:'Álbum oficial PANINI de tapa dura. Tapa rígida premium, 112 páginas, 980 espacios.'
-  },
-  {
-    id:6, name:'Álbum Dorado FIFA World Cup 2026', cat:'albums',
-    img:'catalogo/album_dorado_1.webp', price:22999,
-    badge:'✨ EDICIÓN ORO', badgeColor:'bg-trophy-gold text-on-background',
-    stock:true, desc:'Álbum edición especial dorada. Tapa exclusiva coleccionista. Edición limitada.'
-  },
-  {
-    id:7, name:'Álbum Tapa Blanda FIFA World Cup 2026', cat:'albums',
-    img:'catalogo/album_83_3.webp', price:12999,
-    badge:null, badgeColor:'',
-    stock:true, desc:'Álbum oficial PANINI tapa blanda. La opción más accesible para empezar tu colección del Mundial.'
-  },
-  // ---- SOBRES / FIGURITAS ----
-  {
-    id:8, name:'Pack x11 sobres de figuritas (77 figus)', cat:'figuritas',
-    img:'catalogo/sobres_11_4.webp', price:19999,
-    badge:'🎯 MÁS VENDIDO', badgeColor:'bg-action-orange text-white',
-    stock:true, desc:'11 sobres sellados de fábrica. 77 figuritas oficiales del Mundial FIFA 2026 PANINI.'
-  },
-  {
-    id:9, name:'Pack x25 sobres de figuritas (175 figus)', cat:'figuritas',
-    img:'catalogo/sobres_11_4.webp', price:44999,
-    badge:'⚡ OFERTA', badgeColor:'bg-error text-on-error',
-    stock:true, desc:'25 sobres cerrados. 175 figuritas para avanzar rápido en tu álbum del Mundial 2026.'
-  },
-  {
-    id:10, name:'Pack x50 sobres de figuritas (350 figus)', cat:'figuritas',
-    img:'catalogo/sobres_11_4.webp', price:84999,
-    badge:'🏆 MEJOR PRECIO/FIGUITA', badgeColor:'bg-trophy-gold text-on-background',
-    stock:true, desc:'50 sobres de figuritas. El mejor precio por figurita del mercado. Para completar el álbum.'
-  },
-  // ---- CROMOS ADRENALYN XL ----
-  {
-    id:11, name:'Adrenalyn XL Mundial 2026 - Pack x12 sobres', cat:'cromos',
-    img:'catalogo/sobres_11_4.webp', price:41999,
-    badge:'🥇 OFICIAL PANINI', badgeColor:'bg-primary text-on-primary',
-    stock:true, desc:'Cromos oficiales Adrenalyn XL del Mundial FIFA 2026. 12 sobres · Edición coleccionista Panini.'
-  },
-];
+// ========== PRODUCTS (desde API) ==========
+let PRODUCTS = [];
+let shippingData = {};
+
+async function loadProducts(){
+  try{
+    const res=await fetch('/api/products');
+    if(!res.ok) throw new Error('API error');
+    PRODUCTS=await res.json();
+    renderProds();
+  }catch(e){
+    console.error('No se pudieron cargar productos',e);
+    const grid=document.getElementById('pgrid');
+    if(grid) grid.innerHTML='<p class="text-center text-error col-span-full py-12">No se pudo cargar el catálogo. Verificá que el servidor esté activo.</p>';
+  }
+}
+
+function trackVisit(){
+  fetch('/api/visit',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({path:location.pathname,referrer:document.referrer})
+  }).catch(()=>{});
+}
 
 // ========== CART ==========
 let cart = JSON.parse(localStorage.getItem('cf-cart2')||'[]');
@@ -1281,7 +1228,21 @@ function updateDeliveryEstimate(){
   box.style.display='flex';
 }
 
-function goToPay(e){e.preventDefault();nav('payment')}
+function goToPay(e){
+  e.preventDefault();
+  shippingData={
+    email:document.getElementById('s-email').value,
+    phone:document.getElementById('s-phone').value,
+    dni:document.getElementById('s-dni').value,
+    name:document.getElementById('s-name').value,
+    address:document.getElementById('s-addr').value,
+    apt:document.getElementById('s-apt').value,
+    zip:document.getElementById('s-zip').value,
+    province:document.getElementById('s-prov').value,
+    city:document.getElementById('s-city').value
+  };
+  nav('payment');
+}
 
 // ========== PAYMENT TIMER ==========
 const PAY_DURATION=15*60; // 15 minutos
@@ -1350,16 +1311,40 @@ function handleFile(e){
   showToast('Comprobante cargado ✓');
 }
 
-function finalizeOrder(){
+async function finalizeOrder(){
   if(!cart.length){showToast('Tu carrito está vacío');return}
   stopPayTimer();
-  const num='#CF-'+Math.floor(1000+Math.random()*9000);
+  const subtotal=cartTotal();
+  const discount=discountAmount();
+  const shippingCost=shipCost();
   const grand=grandTotal();
-  document.getElementById('ord-num').textContent=num;
-  document.getElementById('ord-total').textContent=fmt(grand);
+  const payload={
+    items:cart.map(it=>({id:it.id,name:it.name,price:it.price,qty:it.qty,img:it.img})),
+    shipping:shippingData,
+    promo:appliedPromo,
+    subtotal,discount,shipping_cost:shippingCost,total:grand
+  };
+  let orderNum='#CF-'+Math.floor(1000+Math.random()*9000);
+  let orderTotal=grand;
+  try{
+    const res=await fetch('/api/orders',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    if(res.ok){
+      const data=await res.json();
+      orderNum=data.order_number||orderNum;
+      orderTotal=(data.total!=null)?data.total:grand;
+    }
+  }catch(e){
+    console.error('No se pudo registrar el pedido en el servidor',e);
+  }
+  document.getElementById('ord-num').textContent=orderNum;
+  document.getElementById('ord-total').textContent=fmt(orderTotal);
   nav('success');
   launchConfetti();
-  setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges()},1200);
+  setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges();shippingData={}},1200);
 }
 
 function startOver(){nav('catalog');renderProds()}
@@ -1412,7 +1397,8 @@ function initLiveValidation(){
 
 document.addEventListener('DOMContentLoaded',()=>{
   updateBadges();
-  renderProds();
+  trackVisit();
+  loadProducts();
   initLiveValidation();
 });
 </script>

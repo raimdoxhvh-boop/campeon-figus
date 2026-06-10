@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Campeón Figus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body{font-family:'Source Sans 3',sans-serif;background:#f2f3fe;color:#181b23;margin:0}
+    .mso{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle}
+    .mso-fill{font-variation-settings:'FILL' 1}
+    .inp{width:100%;border:1.5px solid #bccabc;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff}
+    .inp:focus{border-color:#006d37;box-shadow:0 0 0 3px rgba(0,109,55,.12)}
+    .card{background:#fff;border:1px solid rgba(40,43,51,.12);border-radius:14px;padding:20px}
+    .tab-btn{border-radius:10px;padding:10px 16px;font-family:'Lexend',sans-serif;font-weight:700;font-size:13px}
+    .tab-btn.active{background:#0D6B48;color:#fff}
+    .tab-btn:not(.active){color:#6d7a6e}
+    .tab-btn:not(.active):hover{background:#ecedf8}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #e0e2ed}
+    th{font-family:'Lexend',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#6d7a6e}
+    .badge-pending{background:#fff3cd;color:#856404}
+    .badge-paid{background:#d4edda;color:#155724}
+    .badge-cancelled{background:#f8d7da;color:#721c24}
+    .stat-num{font-family:'Lexend',sans-serif;font-size:28px;font-weight:900;color:#0D6B48}
+    .hidden{display:none!important}
+  </style>
+</head>
+<body>
+  <!-- Login -->
+  <div id="login-screen" class="min-h-screen flex items-center justify-center p-4" style="background:linear-gradient(135deg,#0D6B48,#006d37)">
+    <div class="card w-full max-w-md s-shadow" style="box-shadow:6px 6px 0 #181b23;border:2px solid #181b23">
+      <h1 style="font-family:'Lexend',sans-serif;font-size:24px;font-weight:900" class="mb-1">Panel Admin</h1>
+      <p class="text-sm text-gray-500 mb-6">Campeón Figus — gestión de pedidos y productos</p>
+      <form id="login-form" class="flex flex-col gap-4">
+        <div>
+          <label class="text-sm font-semibold block mb-1">Contraseña</label>
+          <input class="inp" id="login-pass" type="password" required placeholder="Contraseña de administrador"/>
+        </div>
+        <p id="login-error" class="text-sm text-red-600 hidden"></p>
+        <button type="submit" class="bg-[#FFF200] text-[#181b23] rounded-xl py-3 font-bold border-2 border-[#181b23]" style="font-family:'Lexend',sans-serif;box-shadow:3px 3px 0 #181b23">Ingresar</button>
+      </form>
+      <a href="/" class="block text-center text-sm text-[#0D6B48] mt-4 hover:underline">← Volver a la tienda</a>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="admin-app" class="hidden min-h-screen">
+    <header class="bg-[#0D6B48] text-white px-4 md:px-8 py-4 flex items-center justify-between border-b-2 border-[#006d37]">
+      <div>
+        <h1 style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:900">Panel de Administración</h1>
+        <p class="text-white/70 text-sm">Pedidos · Visitas · Productos</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/" class="text-sm text-[#FFF200] hover:underline hidden sm:inline">Ver tienda</a>
+        <button onclick="logout()" class="text-sm bg-white/15 hover:bg-white/25 rounded-lg px-3 py-2">Salir</button>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+      <!-- Stats -->
+      <div id="stats-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"></div>
+
+      <!-- Tabs -->
+      <div class="flex flex-wrap gap-2 mb-6">
+        <button class="tab-btn active" data-tab="orders" onclick="switchTab('orders')">Pedidos</button>
+        <button class="tab-btn" data-tab="visits" onclick="switchTab('visits')">Visitas</button>
+        <button class="tab-btn" data-tab="products" onclick="switchTab('products')">Productos</button>
+        <button class="tab-btn" data-tab="add-product" onclick="switchTab('add-product')">+ Nuevo producto</button>
+      </div>
+
+      <!-- Orders -->
+      <section id="tab-orders" class="tab-panel">
+        <div class="card overflow-x-auto">
+          <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4">Pedidos recientes</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Pedido</th><th>Cliente</th><th>Total</th><th>Estado</th><th>Fecha</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="orders-body"></tbody>
+          </table>
+          <p id="orders-empty" class="hidden text-center text-gray-500 py-8">No hay pedidos todavía</p>
+        </div>
+      </section>
+
+      <!-- Visits -->
+      <section id="tab-visits" class="tab-panel hidden">
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="card">
+            <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4">Visitas últimos 7 días</h2>
+            <div id="visits-chart" class="flex flex-col gap-2"></div>
+          </div>
+          <div class="card overflow-x-auto">
+            <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4">Registro de visitas</h2>
+            <table>
+              <thead><tr><th>Fecha</th><th>Ruta</th><th>IP</th></tr></thead>
+              <tbody id="visits-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Products list -->
+      <section id="tab-products" class="tab-panel hidden">
+        <div class="card overflow-x-auto">
+          <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4">Catálogo actual</h2>
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Producto</th><th>Categoría</th><th>Precio</th><th>Stock</th><th></th></tr>
+            </thead>
+            <tbody id="products-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Add product -->
+      <section id="tab-add-product" class="tab-panel hidden">
+        <div class="card max-w-2xl">
+          <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4">Agregar nuevo producto</h2>
+          <form id="product-form" class="grid gap-4">
+            <div>
+              <label class="text-sm font-semibold block mb-1">Nombre *</label>
+              <input class="inp" name="name" required placeholder="Ej: Pack x5 sobres de figuritas"/>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-semibold block mb-1">Categoría *</label>
+                <select class="inp" name="cat" required>
+                  <option value="combos">Combos</option>
+                  <option value="albums">Álbumes</option>
+                  <option value="figuritas">Figuritas / Sobres</option>
+                  <option value="cromos">Cromos</option>
+                </select>
+              </div>
+              <div>
+                <label class="text-sm font-semibold block mb-1">Precio (ARS) *</label>
+                <input class="inp" name="price" type="number" min="0" step="1" required placeholder="19999"/>
+              </div>
+            </div>
+            <div>
+              <label class="text-sm font-semibold block mb-1">Ruta de imagen *</label>
+              <input class="inp" name="img" required placeholder="catalogo/mi_producto.webp"/>
+              <p class="text-xs text-gray-500 mt-1">Subí la imagen a la carpeta <code>catalogo/</code> y poné la ruta relativa acá.</p>
+            </div>
+            <div>
+              <label class="text-sm font-semibold block mb-1">Descripción</label>
+              <textarea class="inp" name="desc" rows="3" placeholder="Descripción del producto"></textarea>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label class="text-sm font-semibold block mb-1">Badge (opcional)</label>
+                <input class="inp" name="badge" placeholder="Ej: 🔥 OFERTA"/>
+              </div>
+              <div>
+                <label class="text-sm font-semibold block mb-1">Clases del badge</label>
+                <input class="inp" name="badgeColor" placeholder="bg-error text-on-error"/>
+              </div>
+            </div>
+            <div class="flex gap-6">
+              <label class="flex items-center gap-2 text-sm font-semibold">
+                <input type="checkbox" name="stock" checked class="w-4 h-4"/> En stock
+              </label>
+              <label class="flex items-center gap-2 text-sm font-semibold">
+                <input type="checkbox" name="highlight" class="w-4 h-4"/> Destacado
+              </label>
+            </div>
+            <p id="product-msg" class="text-sm hidden"></p>
+            <button type="submit" class="bg-[#FFF200] text-[#181b23] rounded-xl py-3 font-bold border-2 border-[#181b23] w-full sm:w-auto px-8" style="font-family:'Lexend',sans-serif;box-shadow:3px 3px 0 #181b23">Guardar producto</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Order detail modal -->
+  <div id="order-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onclick="if(event.target===this)closeOrderModal()">
+    <div class="card max-w-lg w-full max-h-[85vh] overflow-y-auto" style="border:2px solid #181b23">
+      <div class="flex justify-between items-start mb-4">
+        <h3 id="modal-title" style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900"></h3>
+        <button onclick="closeOrderModal()" class="text-gray-400 hover:text-gray-700"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div id="modal-body" class="text-sm space-y-3"></div>
+    </div>
+  </div>
+
+<script>
+const TOKEN_KEY = 'cf-admin-token';
+let ordersCache = [];
+
+function fmt(n){return '$'+Number(n).toLocaleString('es-AR')}
+function getToken(){return localStorage.getItem(TOKEN_KEY)}
+function setToken(t){localStorage.setItem(TOKEN_KEY,t)}
+function clearToken(){localStorage.removeItem(TOKEN_KEY)}
+
+async function api(path, opts={}){
+  const headers = {'Content-Type':'application/json', ...(opts.headers||{})};
+  const token = getToken();
+  if(token) headers.Authorization = 'Bearer '+token;
+  const res = await fetch(path, {...opts, headers});
+  const data = await res.json().catch(()=>({}));
+  if(res.status===401){clearToken();showLogin();throw new Error('Sesión expirada')}
+  if(!res.ok) throw new Error(data.error||'Error en la solicitud');
+  return data;
+}
+
+function showLogin(){
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('admin-app').classList.add('hidden');
+}
+function showApp(){
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('admin-app').classList.remove('hidden');
+}
+
+document.getElementById('login-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const err = document.getElementById('login-error');
+  err.classList.add('hidden');
+  try{
+    const data = await api('/api/admin/login',{
+      method:'POST',
+      body:JSON.stringify({password:document.getElementById('login-pass').value})
+    });
+    setToken(data.token);
+    showApp();
+    await refreshAll();
+  }catch(ex){
+    err.textContent = ex.message;
+    err.classList.remove('hidden');
+  }
+});
+
+function logout(){
+  const t = getToken();
+  if(t) fetch('/api/admin/logout',{method:'POST',headers:{Authorization:'Bearer '+t}}).catch(()=>{});
+  clearToken();
+  showLogin();
+}
+
+function switchTab(name){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.add('hidden'));
+  document.getElementById('tab-'+name).classList.remove('hidden');
+}
+
+function statusBadge(s){
+  const cls = {pending:'badge-pending',paid:'badge-paid',cancelled:'badge-cancelled'}[s]||'';
+  const label = {pending:'Pendiente',paid:'Pagado',cancelled:'Cancelado'}[s]||s;
+  return `<span class="px-2 py-0.5 rounded text-xs font-bold ${cls}">${label}</span>`;
+}
+
+function formatDate(iso){
+  try{return new Date(iso).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'})}
+  catch{return iso}
+}
+
+async function loadStats(){
+  const s = await api('/api/stats');
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Visitas totales</p><p class="stat-num">${s.total_visits}</p></div>
+    <div class="card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Visitas hoy</p><p class="stat-num">${s.visits_today}</p><p class="text-xs text-gray-400">${s.unique_visitors_today} IPs únicas</p></div>
+    <div class="card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Pedidos</p><p class="stat-num">${s.total_orders}</p><p class="text-xs text-gray-400">${s.pending_orders} pendientes</p></div>
+    <div class="card"><p class="text-xs text-gray-500 uppercase font-bold mb-1">Ingresos</p><p class="stat-num">${fmt(s.revenue)}</p><p class="text-xs text-gray-400">${s.product_count} productos</p></div>`;
+
+  const chart = document.getElementById('visits-chart');
+  const max = Math.max(...(s.visits_by_day.map(d=>d.visits)), 1);
+  chart.innerHTML = s.visits_by_day.length
+    ? s.visits_by_day.map(d=>`
+      <div class="flex items-center gap-3">
+        <span class="text-xs w-20 text-gray-500">${d.day}</span>
+        <div class="flex-1 bg-gray-100 rounded-full h-5 overflow-hidden">
+          <div class="h-full bg-[#0D6B48] rounded-full" style="width:${(d.visits/max)*100}%"></div>
+        </div>
+        <span class="text-xs font-bold w-8">${d.visits}</span>
+      </div>`).join('')
+    : '<p class="text-gray-500 text-sm">Sin datos de visitas aún</p>';
+}
+
+async function loadOrders(){
+  ordersCache = await api('/api/orders');
+  const body = document.getElementById('orders-body');
+  const empty = document.getElementById('orders-empty');
+  if(!ordersCache.length){body.innerHTML='';empty.classList.remove('hidden');return}
+  empty.classList.add('hidden');
+  body.innerHTML = ordersCache.map(o=>`
+    <tr>
+      <td class="font-bold">${o.order_number}</td>
+      <td><div>${o.customer_name||'—'}</div><div class="text-xs text-gray-500">${o.customer_email||''}</div></td>
+      <td class="font-bold">${fmt(o.total)}</td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="text-xs text-gray-500">${formatDate(o.created_at)}</td>
+      <td>
+        <button onclick="viewOrder(${o.id})" class="text-[#0D6B48] text-xs font-bold hover:underline mr-2">Ver</button>
+        <select onchange="setOrderStatus(${o.id},this.value)" class="text-xs border rounded px-1 py-0.5">
+          <option value="pending" ${o.status==='pending'?'selected':''}>Pendiente</option>
+          <option value="paid" ${o.status==='paid'?'selected':''}>Pagado</option>
+          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelado</option>
+        </select>
+      </td>
+    </tr>`).join('');
+}
+
+async function loadVisits(){
+  const visits = await api('/api/visits?limit=50');
+  document.getElementById('visits-body').innerHTML = visits.length
+    ? visits.map(v=>`<tr><td class="text-xs">${formatDate(v.created_at)}</td><td>${v.path}</td><td class="text-xs text-gray-500">${v.ip||'—'}</td></tr>`).join('')
+    : '<tr><td colspan="3" class="text-center text-gray-500 py-6">Sin visitas registradas</td></tr>';
+}
+
+async function loadProducts(){
+  const products = await api('/api/products');
+  document.getElementById('products-body').innerHTML = products.map(p=>`
+    <tr>
+      <td>${p.id}</td>
+      <td><div class="flex items-center gap-2"><img src="/${p.img}" class="w-10 h-10 object-contain rounded border" alt=""/><span class="font-semibold">${p.name}</span></div></td>
+      <td>${p.cat}</td>
+      <td class="font-bold">${fmt(p.price)}</td>
+      <td>${p.stock?'✅':'❌'}</td>
+      <td><button onclick="deleteProduct(${p.id})" class="text-red-600 text-xs font-bold hover:underline">Eliminar</button></td>
+    </tr>`).join('');
+}
+
+function viewOrder(id){
+  const o = ordersCache.find(x=>x.id===id);
+  if(!o) return;
+  document.getElementById('modal-title').textContent = o.order_number;
+  const items = o.items.map(i=>`<li>${i.qty}× ${i.name} — ${fmt(i.price*i.qty)}</li>`).join('');
+  const sh = o.shipping;
+  document.getElementById('modal-body').innerHTML = `
+    <p><strong>Cliente:</strong> ${sh.name||o.customer_name||'—'}</p>
+    <p><strong>Email:</strong> ${sh.email||o.customer_email||'—'}</p>
+    <p><strong>Teléfono:</strong> ${sh.phone||o.customer_phone||'—'}</p>
+    <p><strong>Dirección:</strong> ${sh.address||'—'}, ${sh.city||''} (${sh.province||''}) CP ${sh.zip||''}</p>
+    <p><strong>Subtotal:</strong> ${fmt(o.subtotal)} · <strong>Envío:</strong> ${fmt(o.shipping_cost)} · <strong>Total:</strong> ${fmt(o.total)}</p>
+    <p><strong>Productos:</strong></p><ul class="list-disc pl-5">${items}</ul>`;
+  document.getElementById('order-modal').classList.remove('hidden');
+}
+function closeOrderModal(){document.getElementById('order-modal').classList.add('hidden')}
+
+async function setOrderStatus(id, status){
+  try{await api('/api/orders/'+id,{method:'PATCH',body:JSON.stringify({status})});await loadStats()}
+  catch(ex){alert(ex.message)}
+}
+
+async function deleteProduct(id){
+  if(!confirm('¿Eliminar este producto del catálogo?')) return;
+  try{await api('/api/products/'+id,{method:'DELETE'});await loadProducts();await loadStats()}
+  catch(ex){alert(ex.message)}
+}
+
+document.getElementById('product-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const f = e.target;
+  const msg = document.getElementById('product-msg');
+  const payload = {
+    name: f.name.value.trim(),
+    cat: f.cat.value,
+    img: f.img.value.trim(),
+    price: Number(f.price.value),
+    desc: f.desc.value.trim(),
+    badge: f.badge.value.trim()||null,
+    badgeColor: f.badgeColor.value.trim(),
+    stock: f.stock.checked,
+    highlight: f.highlight.checked
+  };
+  try{
+    await api('/api/products',{method:'POST',body:JSON.stringify(payload)});
+    msg.textContent = '✅ Producto creado correctamente';
+    msg.className = 'text-sm text-green-700';
+    f.reset(); f.stock.checked = true;
+    await loadProducts(); await loadStats();
+    switchTab('products');
+  }catch(ex){
+    msg.textContent = ex.message;
+    msg.className = 'text-sm text-red-600';
+  }
+  msg.classList.remove('hidden');
+});
+
+async function refreshAll(){
+  await Promise.all([loadStats(), loadOrders(), loadVisits(), loadProducts()]);
+}
+
+document.addEventListener('DOMContentLoaded', async ()=>{
+  if(getToken()){showApp(); try{await refreshAll()}catch{showLogin()}}
+  else showLogin();
+});
+</script>
+</body>
+</html>
