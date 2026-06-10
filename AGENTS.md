@@ -34,9 +34,24 @@ None configured. Verify manually in browser.
 
 New product images: place files in `catalogo/` and use relative path (e.g. `catalogo/mi_foto.webp`) in the form.
 
+### Deploy en Vercel
+
+```bash
+npx vercel --prod
+```
+
+Configurá estas variables de entorno en el dashboard de Vercel:
+
+| Variable | Descripción |
+|----------|-------------|
+| `ADMIN_PASSWORD` | Contraseña del panel admin (obligatoria en producción) |
+| `SECRET_KEY` | Clave para firmar sesiones admin (recomendada) |
+
+En Vercel la base SQLite usa `/tmp` (los datos pueden reiniciarse entre despliegues). Para persistencia en producción, conectá Turso/Postgres más adelante.
+
 ### Data
 
-SQLite DB at `data/store.db` (gitignored). Products seed from `data/seed_products.json` on first run.
+SQLite DB at `data/store.db` locally, `/tmp/campeon_figus.db` on Vercel. Products seed from `data/seed_products.json` on first run.
 
 ### E2E smoke test
 

@@ -6,21 +6,41 @@ from __future__ import annotations
 import json
 import os
 import random
-import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 ROOT = Path(__file__).resolve().parent
-DB_PATH = ROOT / "data" / "store.db"
 SEED_PATH = ROOT / "data" / "seed_products.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "campeon2026")
+SECRET_KEY = os.environ.get("SECRET_KEY", ADMIN_PASSWORD)
+
+if os.environ.get("VERCEL"):
+    DB_PATH = Path("/tmp/campeon_figus.db")
+else:
+    DB_PATH = ROOT / "data" / "store.db"
 
 app = Flask(__name__, static_folder=str(ROOT), static_url_path="")
-_tokens: dict[str, datetime] = {}
+
+
+def _admin_serializer() -> URLSafeTimedSerializer:
+    return URLSafeTimedSerializer(SECRET_KEY, salt="cf-admin")
+
+
+def create_admin_token() -> str:
+    return _admin_serializer().dumps({"role": "admin"})
+
+
+def verify_admin_token(token: str) -> bool:
+    try:
+        _admin_serializer().loads(token, max_age=60 * 60 * 12)
+        return True
+    except (BadSignature, SignatureExpired):
+        return False
 
 
 def now_iso() -> str:
@@ -123,9 +143,7 @@ def require_admin(f):
         if not auth.startswith("Bearer "):
             return jsonify({"error": "No autorizado"}), 401
         token = auth[7:]
-        expires = _tokens.get(token)
-        if not expires or expires < datetime.now(timezone.utc):
-            _tokens.pop(token, None)
+        if not verify_admin_token(token):
             return jsonify({"error": "Sesión expirada"}), 401
         return f(*args, **kwargs)
 
@@ -366,17 +384,12 @@ def admin_login():
     data = request.get_json(silent=True) or {}
     if data.get("password") != ADMIN_PASSWORD:
         return jsonify({"error": "Contraseña incorrecta"}), 401
-    token = secrets.token_urlsafe(32)
-    _tokens[token] = datetime.now(timezone.utc) + timedelta(hours=12)
-    return jsonify({"token": token})
+    return jsonify({"token": create_admin_token()})
 
 
 @app.post("/api/admin/logout")
 @require_admin
 def admin_logout():
-    auth = request.headers.get("Authorization", "")
-    if auth.startswith("Bearer "):
-        _tokens.pop(auth[7:], None)
     return jsonify({"ok": True})
 
 
@@ -390,8 +403,9 @@ def static_files(filepath: str):
     return jsonify({"error": "No encontrado"}), 404
 
 
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     port = int(os.environ.get("PORT", 8080))
     print(f"Campeón Figus server → http://0.0.0.0:{port}")
     print(f"Admin panel → http://0.0.0.0:{port}/admin")

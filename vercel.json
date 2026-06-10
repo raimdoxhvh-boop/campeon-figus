@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "server.py": {
+      "maxDuration": 30,
+      "excludeFiles": "{.git/**,**/__pycache__/**,campeon_figus_theme.zip,data/store.db}"
+    }
+  }
+}
