@@ -75,6 +75,13 @@
     /* Leaflet sizing safety */
     #ship-map .leaflet-control-attribution{font-size:9px}
 
+    /* Countdown ring */
+    .countdown-ring{position:relative;width:92px;height:92px}
+    .countdown-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+    #pay-countdown.urgent{border-color:#ba1a1a;animation:pulseUrgent 1s ease-in-out infinite}
+    @keyframes pulseUrgent{0%,100%{box-shadow:0 0 0 0 rgba(186,26,26,.25)}50%{box-shadow:0 0 0 6px rgba(186,26,26,0)}}
+    #pay-countdown.expired{border-color:#ba1a1a;opacity:.95}
+
     /* Toast */
     #toast{position:fixed;top:68px;right:20px;z-index:9999;background:#0D6B48;color:#fff;
       font-family:'Lexend',sans-serif;font-weight:700;font-size:13px;padding:11px 18px;
@@ -603,6 +610,29 @@
       Realizá la transferencia a la cuenta de abajo. Tu pedido <strong>no se procesa</strong> hasta confirmar el pago. Subí el comprobante para agilizar el proceso.
     </p>
 
+    <!-- Countdown timer -->
+    <div id="pay-countdown" class="flex items-center gap-4 bg-clean-white rounded-xl border-2 border-outline-variant p-4 s-shadow-sm">
+      <div class="countdown-ring flex-shrink-0">
+        <svg viewBox="0 0 120 120" width="92" height="92">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#e0e2ed" stroke-width="9"/>
+          <circle id="pay-timer-ring" cx="60" cy="60" r="52" fill="none" stroke="#006d37" stroke-width="9"
+            stroke-linecap="round" stroke-dasharray="326.726" stroke-dashoffset="0"
+            transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s linear, stroke .4s"/>
+        </svg>
+        <div class="countdown-label">
+          <span id="pay-timer" style="font-family:'Lexend',sans-serif;font-size:22px;font-weight:900;line-height:1">15:00</span>
+          <span style="font-family:'Lexend',sans-serif;font-size:9px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.05em">min</span>
+        </div>
+      </div>
+      <div class="flex-grow">
+        <p style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:900" class="flex items-center gap-1.5 text-on-background">
+          <span class="material-symbols-outlined mso-fill text-action-orange" style="font-size:18px">timer</span>
+          Tiempo para pagar
+        </p>
+        <p id="pay-timer-msg" class="text-on-surface-variant text-xs mt-1 leading-relaxed">Tenés <strong>15 minutos</strong> para realizar la transferencia y mantener tu pedido reservado.</p>
+      </div>
+    </div>
+
     <!-- Bank card -->
     <div class="bg-clean-white rounded-xl border border-outline-variant overflow-hidden s-shadow-sm">
       <div class="bg-pitch-green px-5 py-3 flex items-center gap-3">
@@ -825,7 +855,8 @@ function nav(pg){
   window.scrollTo({top:0,behavior:'smooth'});
   if(pg==='cart'){renderCart()}
   if(pg==='shipping'){renderShipSummary();setTimeout(initShipMap,120)}
-  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(grandTotal())}
+  if(pg!=='payment')stopPayTimer();
+  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(grandTotal());startPayTimer()}
 }
 
 // ========== PRODUCTS ==========
@@ -1262,6 +1293,59 @@ function updateDeliveryEstimate(){
 
 function goToPay(e){e.preventDefault();nav('payment')}
 
+// ========== PAYMENT TIMER ==========
+const PAY_DURATION=15*60; // 15 minutos
+const RING_CIRC=326.726;  // 2 * PI * 52
+let payTimerInt=null,payRemaining=PAY_DURATION;
+
+function fmtClock(s){
+  const m=Math.floor(s/60),sec=s%60;
+  return m+':'+String(sec).padStart(2,'0');
+}
+
+function renderPayTimer(){
+  const t=document.getElementById('pay-timer');
+  const ring=document.getElementById('pay-timer-ring');
+  const box=document.getElementById('pay-countdown');
+  const msg=document.getElementById('pay-timer-msg');
+  if(!t||!ring)return;
+  t.textContent=fmtClock(payRemaining);
+  const frac=payRemaining/PAY_DURATION;
+  ring.style.strokeDashoffset=(RING_CIRC*(1-frac)).toFixed(2);
+  let color='#006d37';
+  if(box){box.classList.remove('urgent','expired')}
+  if(payRemaining<=0){
+    color='#ba1a1a';
+    if(box)box.classList.add('expired');
+    if(msg)msg.innerHTML='<strong style="color:#ba1a1a">El tiempo expiró.</strong> Tu reserva pudo liberarse; podés volver a generar el pedido si el stock sigue disponible.';
+  }else if(payRemaining<=120){
+    color='#ba1a1a';
+    if(box)box.classList.add('urgent');
+    if(msg)msg.innerHTML='⚠️ <strong style="color:#ba1a1a">¡Apurate!</strong> Quedan menos de 2 minutos para confirmar la transferencia.';
+  }else if(payRemaining<=300){
+    color='#E67E22';
+  }
+  ring.style.stroke=color;
+  t.style.color=color;
+}
+
+function startPayTimer(){
+  stopPayTimer();
+  payRemaining=PAY_DURATION;
+  renderPayTimer();
+  payTimerInt=setInterval(()=>{
+    payRemaining--;
+    if(payRemaining<=0){
+      payRemaining=0;renderPayTimer();stopPayTimer();return;
+    }
+    renderPayTimer();
+  },1000);
+}
+
+function stopPayTimer(){
+  if(payTimerInt){clearInterval(payTimerInt);payTimerInt=null}
+}
+
 // ========== PAYMENT ==========
 function cpyText(txt,msg){
   navigator.clipboard.writeText(txt).catch(()=>{}).finally(()=>showToast(msg));
@@ -1278,6 +1362,7 @@ function handleFile(e){
 
 function finalizeOrder(){
   if(!cart.length){showToast('Tu carrito está vacío');return}
+  stopPayTimer();
   const num='#CF-'+Math.floor(1000+Math.random()*9000);
   const grand=grandTotal();
   document.getElementById('ord-num').textContent=num;
