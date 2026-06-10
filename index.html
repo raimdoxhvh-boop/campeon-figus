@@ -8,15 +8,22 @@
   <script src="pixel-config.js"></script>
   <script>
     (function(){
-      var id=(window.CF_PIXEL&&window.CF_PIXEL.metaPixelId||'').trim();
+      var cfg=window.CF_PIXEL||{};
+      var id=(cfg.metaPixelId||'').trim();
+      var testCode=(cfg.testEventCode||'').trim();
       if(!id)return;
+      if(testCode&&!/[?&]test_event_code=/.test(location.search)){
+        var u=new URL(location.href);
+        u.searchParams.set('test_event_code',testCode);
+        history.replaceState({},'',u);
+      }
       !function(f,b,e,v,n,t,s){
         if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
         if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
         t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s);
       }(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
       fbq('init',id);
-      fbq('track','PageView');
+      fbq('track','PageView',{},testCode?{test_event_code:testCode}:{});
     })();
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -803,6 +810,10 @@ function fmt(n){return '$'+n.toLocaleString('es-AR')}
 
 // ========== META PIXEL ==========
 function pixelReady(){return typeof fbq==='function'}
+function pixelTrackOptions(){
+  const code=(window.CF_PIXEL&&window.CF_PIXEL.testEventCode||'').trim();
+  return code?{test_event_code:code}:{};
+}
 function pixelCartPayload(extra){
   const total=cartTotal();
   const ship=total>=130000?0:5500;
@@ -817,7 +828,7 @@ function pixelCartPayload(extra){
 }
 function trackPixel(event,data){
   if(!pixelReady())return;
-  fbq('track',event,data||{});
+  fbq('track',event,data||{},pixelTrackOptions());
 }
 
 // ========== NAVIGATION ==========
