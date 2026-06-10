@@ -110,6 +110,20 @@
     .ticker-wrap{overflow:hidden;white-space:nowrap}
     .ticker-content{display:inline-block;animation:ticker 28s linear infinite}
     @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+    /* ===== Cart dynamic effects ===== */
+    .cart-badge.bump{animation:badgeBump .45s cubic-bezier(.36,.07,.19,.97)}
+    @keyframes badgeBump{0%{transform:scale(1)}30%{transform:scale(1.55)}60%{transform:scale(.82)}100%{transform:scale(1)}}
+    .cart-item-enter{animation:ciEnter .42s cubic-bezier(.21,1.02,.73,1) both}
+    @keyframes ciEnter{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+    .cart-item-leave{animation:ciLeave .4s ease forwards;pointer-events:none}
+    @keyframes ciLeave{to{opacity:0;transform:translateX(60px) scale(.9)}}
+    .qty-flash{animation:qtyFlash .55s ease}
+    @keyframes qtyFlash{0%{color:#E67E22;transform:scale(1.22)}100%{transform:scale(1)}}
+    .qbtn{transition:transform .12s,background .15s}
+    .qbtn:active{transform:scale(.82)}
+    .fly-img{position:fixed;z-index:10000;pointer-events:none;object-fit:contain;border-radius:8px;
+      transition:left .8s cubic-bezier(.55,-0.25,.55,1.15),top .8s cubic-bezier(.55,-0.25,.55,1.15),width .8s ease,height .8s ease,opacity .8s ease}
   </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -153,7 +167,7 @@
         class="placeholder:text-white/60"/>
       <span class="material-symbols-outlined mso absolute right-2.5 top-1/2 -translate-y-1/2 text-white/70" style="font-size:17px">search</span>
     </div>
-    <button onclick="nav('cart')" class="relative text-trophy-gold hover:scale-110 transition-transform">
+    <button id="cart-d" onclick="nav('cart')" class="relative text-trophy-gold hover:scale-110 transition-transform">
       <span class="material-symbols-outlined mso-fill" style="font-size:28px">shopping_cart</span>
       <span id="badge-d" class="cart-badge hidden">0</span>
     </button>
@@ -167,7 +181,7 @@
   </button>
   <div class="flex items-center gap-3">
     <button onclick="toggleMSearch()" class="text-white"><span class="material-symbols-outlined" style="font-size:22px">search</span></button>
-    <button onclick="nav('cart')" class="relative text-trophy-gold">
+    <button id="cart-m" onclick="nav('cart')" class="relative text-trophy-gold">
       <span class="material-symbols-outlined mso-fill" style="font-size:24px">shopping_cart</span>
       <span id="badge-m" class="cart-badge hidden">0</span>
     </button>
@@ -388,12 +402,14 @@
           <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4 pb-2 border-b-2 border-outline-variant">Resumen</h2>
           <div class="flex flex-col gap-2.5 text-sm mb-4">
             <div class="flex justify-between text-on-surface-variant"><span id="ccount">Subtotal</span><span id="csubt" class="font-bold text-on-background">$0</span></div>
-            <div class="flex justify-between text-on-surface-variant"><span>Descuentos</span><span class="font-bold text-primary">$0</span></div>
+            <div id="cdisc-row" class="justify-between text-on-surface-variant" style="display:none"><span id="cdisc-label">Descuento</span><span id="cdisc" class="font-bold text-primary">$0</span></div>
             <div class="flex justify-between text-on-surface-variant"><span>Envío est.</span><span id="cship" class="font-bold text-on-background">$5.500</span></div>
             <div class="mt-2 pt-2 border-t border-dashed border-outline-variant flex gap-2">
-              <input type="text" placeholder="Código promo" class="flex-grow inp uppercase" style="padding:8px;font-size:12px;font-family:'Lexend',sans-serif;font-weight:700"/>
-              <button class="bg-on-background text-clean-white rounded-lg px-3 py-1 text-xs" style="font-family:'Lexend',sans-serif;font-weight:700">Aplicar</button>
+              <input id="promo-input" type="text" placeholder="Código promo" class="flex-grow inp uppercase" style="padding:8px;font-size:12px;font-family:'Lexend',sans-serif;font-weight:700" onkeydown="if(event.key==='Enter'){event.preventDefault();applyPromo()}"/>
+              <button onclick="applyPromo()" class="bg-on-background text-clean-white rounded-lg px-3 py-1 text-xs hover:bg-primary transition-colors" style="font-family:'Lexend',sans-serif;font-weight:700">Aplicar</button>
             </div>
+            <p id="promo-msg" class="text-xs" style="font-family:'Lexend',sans-serif;font-weight:700;min-height:14px"></p>
+            <p class="text-[10px] text-outline -mt-1">Cupones: <button onclick="document.getElementById('promo-input').value='MUNDIAL10';applyPromo()" class="underline hover:text-primary font-bold">MUNDIAL10</button> · <button onclick="document.getElementById('promo-input').value='CAMPEON15';applyPromo()" class="underline hover:text-primary font-bold">CAMPEON15</button></p>
           </div>
           <div class="border-t-4 border-on-background pt-3 mb-5">
             <div class="flex justify-between items-center">
@@ -659,7 +675,7 @@
     <span class="material-symbols-outlined" style="font-size:22px">style</span>
     <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Catálogo</span>
   </button>
-  <button onclick="nav('cart')" class="relative flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
+  <button id="cart-bn" onclick="nav('cart')" class="relative flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
     <span class="material-symbols-outlined mso-fill" style="font-size:22px">shopping_basket</span>
     <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Carrito</span>
     <span id="badge-bn" class="hidden absolute top-1 right-2 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-surface-container-highest" style="font-family:'Lexend',sans-serif">0</span>
@@ -771,7 +787,7 @@ function nav(pg){
   window.scrollTo({top:0,behavior:'smooth'});
   if(pg==='cart'){renderCart()}
   if(pg==='shipping'){renderShipSummary()}
-  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(cartTotal()+(cartTotal()>=130000?0:5500))}
+  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(grandTotal())}
 }
 
 // ========== PRODUCTS ==========
@@ -839,7 +855,7 @@ function renderProds(){
             <span style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900">${fmt(p.price)} <span style="font-size:11px;font-weight:400;color:#6d7a6e">ARS</span></span>
           </div>
           ${p.stock
-            ?`<button onclick="event.stopPropagation();addToCart(${p.id})" 
+            ?`<button onclick="event.stopPropagation();addToCart(${p.id},event)" 
                 class="bg-trophy-gold text-on-background rounded-lg border-2 border-on-background flex items-center gap-1 px-2.5 py-2 hover:s-shadow hover:-translate-y-0.5 transition-all"
                 style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:800;box-shadow:2px 2px 0 #181b23;min-width:38px">
                 <span class="material-symbols-outlined mso-fill" style="font-size:16px">add_shopping_cart</span>
@@ -856,23 +872,119 @@ function renderProds(){
 
 function getCatLabel(c){return{combos:'🎁 Combo',albums:'📗 Álbum',figuritas:'⚽ Sobres',cromos:'🃏 Cromos'}[c]||c}
 
+// ========== PROMO / TOTALS ==========
+const PROMOS={
+  'MUNDIAL10':{rate:.10,label:'10% OFF'},
+  'FIGUS5':{rate:.05,label:'5% OFF'},
+  'CAMPEON15':{rate:.15,label:'15% OFF'}
+};
+let appliedPromo=JSON.parse(localStorage.getItem('cf-promo')||'null');
+
+function discountAmount(){return appliedPromo?Math.round(cartTotal()*appliedPromo.rate):0}
+function shipCost(){return cartTotal()>=130000?0:5500}
+function grandTotal(){return cartTotal()-discountAmount()+shipCost()}
+
+function applyPromo(){
+  const inp=document.getElementById('promo-input');
+  const msg=document.getElementById('promo-msg');
+  const code=(inp?.value||'').trim().toUpperCase();
+  if(!code){if(msg){msg.textContent='Ingresá un código';msg.style.color='#ba1a1a'}return}
+  const p=PROMOS[code];
+  if(!p){
+    appliedPromo=null;localStorage.removeItem('cf-promo');
+    if(msg){msg.textContent='Código inválido ✗';msg.style.color='#ba1a1a'}
+    updateCartTotals();return;
+  }
+  appliedPromo={code,rate:p.rate,label:p.label};
+  localStorage.setItem('cf-promo',JSON.stringify(appliedPromo));
+  if(msg){msg.textContent='✓ '+p.label+' aplicado';msg.style.color='#006d37'}
+  showToast('🎟️ Cupón aplicado: '+p.label);
+  updateCartTotals();
+}
+
+// ========== ANIMATION HELPERS ==========
+function animateNumber(el,to){
+  if(!el)return;
+  const from=parseInt(el.dataset.val||'0',10)||0;
+  el.dataset.val=to;
+  if(from===to){el.textContent=fmt(to);return}
+  const dur=450,start=performance.now();
+  function step(now){
+    const p=Math.min(1,(now-start)/dur);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.round(from+(to-from)*ease));
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function bumpBadges(){
+  ['badge-d','badge-m','badge-bn'].forEach(id=>{
+    const e=document.getElementById(id);
+    if(e&&!e.classList.contains('hidden')){e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump')}
+  });
+}
+
+function flyToCart(img){
+  if(!img)return;
+  const target=['cart-d','cart-m','cart-bn'].map(i=>document.getElementById(i)).find(e=>e&&e.offsetParent!==null);
+  if(!target)return;
+  const s=img.getBoundingClientRect(),t=target.getBoundingClientRect();
+  const fly=img.cloneNode(true);
+  fly.className='fly-img';
+  fly.style.left=s.left+'px';fly.style.top=s.top+'px';
+  fly.style.width=s.width+'px';fly.style.height=s.height+'px';fly.style.opacity='1';
+  document.body.appendChild(fly);
+  requestAnimationFrame(()=>{
+    fly.style.left=(t.left+t.width/2-16)+'px';
+    fly.style.top=(t.top+t.height/2-16)+'px';
+    fly.style.width='32px';fly.style.height='32px';fly.style.opacity='.25';
+  });
+  setTimeout(()=>{fly.remove();bumpBadges()},820);
+}
+
 // ========== CART OPERATIONS ==========
-function addToCart(id){
+function addToCart(id,e){
   const p=PRODUCTS.find(x=>x.id===id);
   if(!p||!p.stock)return;
   const ex=cart.find(x=>x.id===id);
   if(ex)ex.qty++;
   else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:1});
   saveCart();updateBadges();
-  showToast('✅ '+p.name.substring(0,30)+'...');
+  if(e&&e.currentTarget){
+    const art=e.currentTarget.closest('article');
+    const img=art&&art.querySelector('img');
+    if(img)flyToCart(img);else bumpBadges();
+  }else bumpBadges();
+  showToast('✅ Agregado: '+p.name);
 }
 
-function rmFromCart(id){cart=cart.filter(x=>x.id!==id);saveCart();updateBadges();renderCart()}
+function rmFromCart(id){
+  const art=document.getElementById('ci-'+id);
+  let done=false;
+  const finish=()=>{
+    if(done)return;done=true;
+    cart=cart.filter(x=>x.id!==id);saveCart();updateBadges();
+    if(art)art.remove();
+    if(!cart.length)renderCart();else updateCartTotals();
+  };
+  if(art){
+    art.classList.add('cart-item-leave');
+    art.addEventListener('animationend',finish,{once:true});
+    setTimeout(finish,420);
+  }else finish();
+}
+
 function chgQty(id,d){
   const it=cart.find(x=>x.id===id);if(!it)return;
-  it.qty=Math.max(1,it.qty+d);
-  if(it.qty<1){rmFromCart(id);return}
-  saveCart();updateBadges();renderCart();
+  const nq=it.qty+d;
+  if(nq<1){rmFromCart(id);return}
+  it.qty=nq;saveCart();updateBadges();bumpBadges();
+  const qEl=document.getElementById('qty-'+id);
+  const lEl=document.getElementById('line-'+id);
+  if(qEl)qEl.textContent=it.qty;
+  if(lEl){lEl.textContent=fmt(it.price*it.qty);lEl.classList.remove('qty-flash');void lEl.offsetWidth;lEl.classList.add('qty-flash')}
+  updateCartTotals();
 }
 
 function updateBadges(){
@@ -890,34 +1002,53 @@ function renderCart(){
   if(!list)return;
   if(!cart.length){
     empty.classList.remove('hidden');cont.style.display='none';
+    const sb=document.getElementById('csubt');if(sb)sb.dataset.val='0';
+    const ct=document.getElementById('ctotal');if(ct)ct.dataset.val='0';
     updateProg(0);return;
   }
   empty.classList.add('hidden');cont.style.display='';
-  const total=cartTotal();const cnt=cartCount();
-  list.innerHTML=cart.map(it=>`
-    <article class="bg-clean-white rounded-xl border border-outline-variant p-4 flex gap-4 items-center hover:shadow-[4px_4px_0_#181b23] transition-shadow duration-200">
+  if(appliedPromo){
+    const pin=document.getElementById('promo-input');if(pin&&!pin.value)pin.value=appliedPromo.code;
+    const pmsg=document.getElementById('promo-msg');if(pmsg){pmsg.textContent='✓ '+appliedPromo.label+' aplicado';pmsg.style.color='#006d37'}
+  }
+  list.innerHTML=cart.map((it,i)=>`
+    <article id="ci-${it.id}" class="cart-item-enter bg-clean-white rounded-xl border border-outline-variant p-4 flex gap-4 items-center hover:shadow-[4px_4px_0_#181b23] transition-shadow duration-200" style="animation-delay:${i*60}ms">
       <div class="w-20 h-20 md:w-24 md:h-24 bg-surface-container-low rounded-lg flex-shrink-0 flex items-center justify-center p-1 overflow-hidden border border-outline-variant">
         <img src="${it.img}" alt="${it.name}" class="max-h-full max-w-full object-contain"/>
       </div>
       <div class="flex-grow min-w-0">
         <h3 style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:800;line-height:1.25" class="text-on-background line-clamp-2 mb-1">${it.name}</h3>
-        <p style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900" class="text-on-background mt-1">${fmt(it.price*it.qty)}</p>
+        <p class="text-xs text-outline" style="font-family:'Lexend',sans-serif;font-weight:600">${fmt(it.price)} c/u</p>
+        <p id="line-${it.id}" style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900" class="text-on-background mt-1">${fmt(it.price*it.qty)}</p>
       </div>
       <div class="flex flex-col items-end gap-3 flex-shrink-0">
-        <button onclick="rmFromCart(${it.id})" class="text-outline hover:text-error transition-colors p-1 rounded hover:bg-error-container"><span class="material-symbols-outlined" style="font-size:20px">delete</span></button>
+        <button onclick="rmFromCart(${it.id})" class="text-outline hover:text-error transition-colors p-1 rounded hover:bg-error-container" title="Quitar"><span class="material-symbols-outlined" style="font-size:20px">delete</span></button>
         <div class="flex items-center border-2 border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest">
-          <button onclick="chgQty(${it.id},-1)" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors font-bold text-lg">−</button>
-          <span style="font-family:'Lexend',sans-serif;font-weight:800;font-size:14px" class="w-10 text-center border-x-2 border-outline-variant py-1">${it.qty}</span>
-          <button onclick="chgQty(${it.id},1)" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors font-bold text-lg">+</button>
+          <button onclick="chgQty(${it.id},-1)" class="qbtn w-8 h-8 flex items-center justify-center hover:bg-surface-container font-bold text-lg">−</button>
+          <span id="qty-${it.id}" style="font-family:'Lexend',sans-serif;font-weight:800;font-size:14px" class="w-10 text-center border-x-2 border-outline-variant py-1">${it.qty}</span>
+          <button onclick="chgQty(${it.id},1)" class="qbtn w-8 h-8 flex items-center justify-center hover:bg-surface-container font-bold text-lg">+</button>
         </div>
       </div>
     </article>`).join('');
 
-  const ship=total>=130000?0:5500;
-  document.getElementById('ccount').textContent=`Subtotal (${cnt} item${cnt!==1?'s':''})`;
-  document.getElementById('csubt').textContent=fmt(total);
-  document.getElementById('cship').textContent=ship===0?'¡Gratis! 🎉':fmt(ship);
-  document.getElementById('ctotal').textContent=fmt(total+ship);
+  updateCartTotals();
+}
+
+function updateCartTotals(){
+  const total=cartTotal();const cnt=cartCount();
+  const disc=discountAmount();const ship=shipCost();
+  const cc=document.getElementById('ccount');
+  if(cc)cc.textContent=`Subtotal (${cnt} item${cnt!==1?'s':''})`;
+  animateNumber(document.getElementById('csubt'),total);
+  const drow=document.getElementById('cdisc-row');
+  const dEl=document.getElementById('cdisc');
+  const dLabel=document.getElementById('cdisc-label');
+  if(drow)drow.style.display=disc>0?'flex':'none';
+  if(dEl)dEl.textContent='−'+fmt(disc);
+  if(dLabel&&appliedPromo)dLabel.textContent='Descuento ('+appliedPromo.label+')';
+  const shEl=document.getElementById('cship');
+  if(shEl)shEl.textContent=ship===0?'¡Gratis! 🎉':fmt(ship);
+  animateNumber(document.getElementById('ctotal'),total-disc+ship);
   updateProg(total);
 }
 
@@ -952,9 +1083,8 @@ function renderShipSummary(){
         <p style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:800;color:#0D6B48" class="mt-1">${fmt(it.price*it.qty)}</p>
       </div>
     </div>`).join('');
-  const t=cartTotal();
-  document.getElementById('ship-subt').textContent=fmt(t);
-  document.getElementById('ship-tot').textContent=fmt(t);
+  document.getElementById('ship-subt').textContent=fmt(cartTotal());
+  document.getElementById('ship-tot').textContent=fmt(grandTotal());
 }
 
 function goToPay(e){e.preventDefault();nav('payment')}
@@ -976,12 +1106,12 @@ function handleFile(e){
 function finalizeOrder(){
   if(!cart.length){showToast('Tu carrito está vacío');return}
   const num='#CF-'+Math.floor(1000+Math.random()*9000);
-  const grand=cartTotal()+(cartTotal()>=130000?0:5500);
+  const grand=grandTotal();
   document.getElementById('ord-num').textContent=num;
   document.getElementById('ord-total').textContent=fmt(grand);
   nav('success');
   launchConfetti();
-  setTimeout(()=>{cart=[];saveCart();updateBadges()},1200);
+  setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges()},1200);
 }
 
 function startOver(){nav('catalog');renderProds()}
