@@ -1273,11 +1273,11 @@ function matchProvince(state){
 }
 
 const DELIVERY_ZONES={
-  'Ciudad Autónoma de Buenos Aires':{zone:'CABA · Envío en el día',time:'Entrega en 24 hs comprando antes de las 14 hs.'},
-  'Buenos Aires':{zone:'Provincia de Buenos Aires',time:'Entrega estimada en 2 a 4 días hábiles.'},
-  'Córdoba':{zone:'Interior del país',time:'Entrega estimada en 3 a 6 días hábiles.'},
-  'Santa Fe':{zone:'Interior del país',time:'Entrega estimada en 3 a 6 días hábiles.'},
-  'Mendoza':{zone:'Interior del país',time:'Entrega estimada en 4 a 7 días hábiles.'}
+  'Ciudad Autónoma de Buenos Aires':{zone:'CABA · Envío en el día',time:'Entrega estimada en 1 día hábil.'},
+  'Buenos Aires':{zone:'Provincia de Buenos Aires',time:'Entrega estimada en 1 día hábil.'},
+  'Córdoba':{zone:'Interior del país',time:'Entrega estimada en 1 día hábil.'},
+  'Santa Fe':{zone:'Interior del país',time:'Entrega estimada en 1 día hábil.'},
+  'Mendoza':{zone:'Interior del país',time:'Entrega estimada en 1 día hábil.'}
 };
 
 function updateDeliveryEstimate(){
@@ -1285,7 +1285,7 @@ function updateDeliveryEstimate(){
   const box=document.getElementById('delivery-estimate');
   if(!box)return;
   if(!prov){box.style.display='none';return}
-  const info=DELIVERY_ZONES[prov]||{zone:prov,time:'Entrega estimada en 4 a 8 días hábiles.'};
+  const info=DELIVERY_ZONES[prov]||{zone:prov,time:'Entrega estimada en 1 día hábil.'};
   document.getElementById('delivery-zone').textContent='Envío a '+info.zone;
   document.getElementById('delivery-time').textContent=info.time;
   box.style.display='flex';
