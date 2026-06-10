@@ -34,13 +34,16 @@ None configured. Verify manually in browser.
 
 New product images: place files in `catalogo/` and use relative path (e.g. `catalogo/mi_foto.webp`) in the form.
 
-### Deploy en Vercel
+### Deploy en Vercel (CLI — opción B)
 
 ```bash
-npx vercel --prod
+npx vercel login          # una sola vez, abre el navegador
+./deploy-vercel.sh          # o: npx vercel --prod --yes
 ```
 
-Configurá estas variables de entorno en el dashboard de Vercel:
+Si usás token en CI/Cloud Agent: `export VERCEL_TOKEN=...` y luego `npx vercel --prod --yes --token "$VERCEL_TOKEN"`.
+
+Configurá estas variables de entorno en el dashboard de Vercel (o al primer deploy):
 
 | Variable | Descripción |
 |----------|-------------|
