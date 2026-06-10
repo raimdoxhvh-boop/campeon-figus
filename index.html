@@ -153,7 +153,7 @@
 <!-- ===== ANNOUNCEMENT BAR ===== -->
 <div class="bg-on-background text-trophy-gold py-2 overflow-hidden ticker-wrap" style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:700">
   <div class="ticker-content">
-    🚀 Envíos EN EL DÍA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$130.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;·&nbsp; 🚀 Envíos EN EL DÍA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$130.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;&nbsp;
+    🚀 Envíos EN EL DÍA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$40.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;·&nbsp; 🚀 Envíos EN EL DÍA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$40.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;&nbsp;
   </div>
 </div>
 
@@ -397,7 +397,7 @@
         <div id="progfill" class="h-full bg-primary relative transition-all duration-700 prog-bar-inner" style="width:0%"></div>
       </div>
       <div class="flex justify-between mt-1.5" style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:600;color:#6d7a6e">
-        <span>$0</span><span>Meta: $130.000</span>
+        <span>$0</span><span>Meta: $40.000</span>
       </div>
     </div>
 
@@ -950,7 +950,7 @@ const PROMOS={
 let appliedPromo=JSON.parse(localStorage.getItem('cf-promo')||'null');
 
 function discountAmount(){return appliedPromo?Math.round(cartTotal()*appliedPromo.rate):0}
-function shipCost(){return cartTotal()>=130000?0:5500}
+function shipCost(){return cartTotal()>=40000?0:5500}
 function grandTotal(){return cartTotal()-discountAmount()+shipCost()}
 
 function applyPromo(){
@@ -1122,7 +1122,7 @@ function updateCartTotals(){
 }
 
 function updateProg(total){
-  const THRESH=130000;
+  const THRESH=40000;
   const pct=Math.min(100,(total/THRESH)*100);
   const fill=document.getElementById('progfill');
   const txt=document.getElementById('progtext');
