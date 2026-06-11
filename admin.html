@@ -330,16 +330,51 @@ function viewOrder(id){
   document.getElementById('modal-title').textContent = o.order_number;
   const items = o.items.map(i=>`<li>${i.qty}× ${i.name} — ${fmt(i.price*i.qty)}</li>`).join('');
   const sh = o.shipping;
+  const receipt = o.has_receipt
+    ? `<div><strong>Comprobante de pago:</strong>
+        <div id="receipt-box" class="mt-2">
+          <button onclick="viewReceipt(${o.id})" class="inline-flex items-center gap-1 text-[#0D6B48] text-sm font-bold hover:underline">📄 Ver comprobante (${o.receipt_name||'archivo'})</button>
+        </div>
+      </div>`
+    : '<p><strong>Comprobante de pago:</strong> <span class="text-gray-500">Sin comprobante adjunto</span></p>';
   document.getElementById('modal-body').innerHTML = `
     <p><strong>Cliente:</strong> ${sh.name||o.customer_name||'—'}</p>
     <p><strong>Email:</strong> ${sh.email||o.customer_email||'—'}</p>
     <p><strong>Teléfono:</strong> ${sh.phone||o.customer_phone||'—'}</p>
     <p><strong>Dirección:</strong> ${sh.address||'—'}, ${sh.city||''} (${sh.province||''}) CP ${sh.zip||''}</p>
     <p><strong>Subtotal:</strong> ${fmt(o.subtotal)} · <strong>Envío:</strong> ${fmt(o.shipping_cost)} · <strong>Total:</strong> ${fmt(o.total)}</p>
+    ${receipt}
     <p><strong>Productos:</strong></p><ul class="list-disc pl-5">${items}</ul>`;
   document.getElementById('order-modal').classList.remove('hidden');
+  if(o.has_receipt && (o.receipt_mime||'').startsWith('image/')) loadReceiptPreview(o.id);
 }
-function closeOrderModal(){document.getElementById('order-modal').classList.add('hidden')}
+function closeOrderModal(){
+  document.getElementById('order-modal').classList.add('hidden');
+  if(window._receiptUrl){URL.revokeObjectURL(window._receiptUrl);window._receiptUrl=null}
+}
+
+async function fetchReceiptUrl(id){
+  const res = await fetch('/api/orders/'+id+'/receipt',{headers:{Authorization:'Bearer '+getToken()}});
+  if(!res.ok) throw new Error('No se pudo cargar el comprobante');
+  const blob = await res.blob();
+  if(window._receiptUrl) URL.revokeObjectURL(window._receiptUrl);
+  window._receiptUrl = URL.createObjectURL(blob);
+  return window._receiptUrl;
+}
+
+async function viewReceipt(id){
+  try{ window.open(await fetchReceiptUrl(id),'_blank'); }
+  catch(ex){ alert(ex.message); }
+}
+
+async function loadReceiptPreview(id){
+  try{
+    const url = await fetchReceiptUrl(id);
+    const box = document.getElementById('receipt-box');
+    if(box) box.insertAdjacentHTML('beforeend',
+      `<a href="${url}" target="_blank"><img src="${url}" alt="Comprobante" class="mt-2 max-h-64 rounded border"/></a>`);
+  }catch(ex){ /* el botón Ver comprobante sigue disponible */ }
+}
 
 async function setOrderStatus(id, status){
   try{await api('/api/orders/'+id,{method:'PATCH',body:JSON.stringify({status})});await loadStats()}

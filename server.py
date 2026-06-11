@@ -3,20 +3,55 @@
 
 from __future__ import annotations
 
+import base64
+import binascii
 import json
 import os
 import random
+import re
 import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, Response, jsonify, request, send_from_directory
 
 ROOT = Path(__file__).resolve().parent
 SEED_PATH = ROOT / "data" / "seed_products.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "campeon2026")
+
+# Comprobante de pago: tipos permitidos y tamaño máximo (5 MB).
+RECEIPT_ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp", "application/pdf"}
+RECEIPT_MAX_BYTES = 5 * 1024 * 1024
+_DATA_URL_RE = re.compile(r"^data:([\w.+-]+/[\w.+-]+);base64,(.+)$", re.DOTALL)
+
+
+def parse_receipt(receipt: dict | None) -> tuple[str, str, str] | None:
+    """Valida un comprobante recibido como data URL base64.
+
+    Devuelve (data_url, filename, mime) o None si no hay comprobante.
+    Lanza ValueError si el comprobante es inválido (tipo o tamaño).
+    """
+    if not receipt or not isinstance(receipt, dict):
+        return None
+    data_url = (receipt.get("data") or "").strip()
+    if not data_url:
+        return None
+    m = _DATA_URL_RE.match(data_url)
+    if not m:
+        raise ValueError("Comprobante con formato inválido")
+    mime = m.group(1).lower()
+    if mime not in RECEIPT_ALLOWED_MIME:
+        raise ValueError("Tipo de comprobante no permitido (usá JPG, PNG, WEBP o PDF)")
+    try:
+        raw = base64.b64decode(m.group(2), validate=True)
+    except (binascii.Error, ValueError):
+        raise ValueError("Comprobante con datos inválidos")
+    if len(raw) > RECEIPT_MAX_BYTES:
+        raise ValueError("El comprobante supera el máximo de 5MB")
+    name = (receipt.get("name") or "comprobante").strip()[:120]
+    return data_url, name, mime
 
 
 def _resolve_db_path() -> Path:
@@ -80,6 +115,9 @@ def init_db() -> None:
                 shipping_cost REAL NOT NULL,
                 total REAL NOT NULL,
                 status TEXT NOT NULL DEFAULT 'pending',
+                receipt_data TEXT,
+                receipt_name TEXT,
+                receipt_mime TEXT,
                 created_at TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS visits (
@@ -92,6 +130,11 @@ def init_db() -> None:
             );
             """
         )
+        # Migración: agrega columnas de comprobante a bases existentes.
+        existing_cols = {r["name"] for r in conn.execute("PRAGMA table_info(orders)").fetchall()}
+        for col in ("receipt_data", "receipt_name", "receipt_mime"):
+            if col not in existing_cols:
+                conn.execute(f"ALTER TABLE orders ADD COLUMN {col} TEXT")
         count = conn.execute("SELECT COUNT(*) AS c FROM products").fetchone()["c"]
         if count == 0 and SEED_PATH.exists():
             products = json.loads(SEED_PATH.read_text(encoding="utf-8"))
@@ -247,6 +290,12 @@ def create_order():
     total = float(data.get("total") or subtotal + shipping_cost)
     order_number = "#CF-" + str(random.randint(1000, 9999))
 
+    try:
+        receipt = parse_receipt(data.get("receipt"))
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    receipt_data, receipt_name, receipt_mime = receipt if receipt else (None, None, None)
+
     with get_db() as conn:
         for _ in range(10):
             try:
@@ -254,8 +303,9 @@ def create_order():
                     """
                     INSERT INTO orders
                     (order_number, customer_email, customer_phone, customer_name,
-                     shipping_json, items_json, subtotal, shipping_cost, total, status, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+                     shipping_json, items_json, subtotal, shipping_cost, total, status,
+                     receipt_data, receipt_name, receipt_mime, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, ?)
                     """,
                     (
                         order_number,
@@ -267,6 +317,9 @@ def create_order():
                         subtotal,
                         shipping_cost,
                         total,
+                        receipt_data,
+                        receipt_name,
+                        receipt_mime,
                         now_iso(),
                     ),
                 )
@@ -299,10 +352,41 @@ def list_orders():
                 "shipping_cost": r["shipping_cost"],
                 "total": r["total"],
                 "status": r["status"],
+                "has_receipt": bool(r["receipt_data"]),
+                "receipt_name": r["receipt_name"],
+                "receipt_mime": r["receipt_mime"],
                 "created_at": r["created_at"],
             }
         )
     return jsonify(orders)
+
+
+@app.get("/api/orders/<int:order_id>/receipt")
+@require_admin
+def get_order_receipt(order_id: int):
+    with get_db() as conn:
+        row = conn.execute(
+            "SELECT receipt_data, receipt_name, receipt_mime FROM orders WHERE id = ?",
+            (order_id,),
+        ).fetchone()
+    if row is None:
+        return jsonify({"error": "Pedido no encontrado"}), 404
+    if not row["receipt_data"]:
+        return jsonify({"error": "Este pedido no tiene comprobante"}), 404
+    m = _DATA_URL_RE.match(row["receipt_data"])
+    if not m:
+        return jsonify({"error": "Comprobante inválido"}), 500
+    try:
+        raw = base64.b64decode(m.group(2), validate=True)
+    except (binascii.Error, ValueError):
+        return jsonify({"error": "Comprobante inválido"}), 500
+    mime = row["receipt_mime"] or m.group(1)
+    name = row["receipt_name"] or "comprobante"
+    return Response(
+        raw,
+        mimetype=mime,
+        headers={"Content-Disposition": f'inline; filename="{name}"'},
+    )
 
 
 @app.patch("/api/orders/<int:order_id>")
