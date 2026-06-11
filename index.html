@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script>
     tailwind.config = {
       theme: {
@@ -65,6 +67,20 @@
       padding:11px 14px;font-family:'Source Sans 3',sans-serif;font-size:15px;color:#181b23;outline:none;transition:border-color .2s,box-shadow .2s}
     .inp:focus{border-color:#006d37;box-shadow:0 0 0 3px rgba(0,109,55,.12)}
     select.inp{cursor:pointer}
+    .inp.valid{border-color:#27ae60;background:#f0fdf4}
+    .field-wrap{position:relative}
+    .field-wrap .ok-check{position:absolute;right:10px;top:50%;transform:translateY(-50%) scale(0);
+      color:#27ae60;font-size:18px;transition:transform .25s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+    .field-wrap.done .ok-check{transform:translateY(-50%) scale(1)}
+    /* Leaflet sizing safety */
+    #ship-map .leaflet-control-attribution{font-size:9px}
+
+    /* Countdown ring */
+    .countdown-ring{position:relative;width:92px;height:92px}
+    .countdown-label{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+    #pay-countdown.urgent{border-color:#ba1a1a;animation:pulseUrgent 1s ease-in-out infinite}
+    @keyframes pulseUrgent{0%,100%{box-shadow:0 0 0 0 rgba(186,26,26,.25)}50%{box-shadow:0 0 0 6px rgba(186,26,26,0)}}
+    #pay-countdown.expired{border-color:#ba1a1a;opacity:.95}
 
     /* Toast */
     #toast{position:fixed;top:68px;right:20px;z-index:9999;background:#0D6B48;color:#fff;
@@ -110,6 +126,20 @@
     .ticker-wrap{overflow:hidden;white-space:nowrap}
     .ticker-content{display:inline-block;animation:ticker 28s linear infinite}
     @keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+    /* ===== Cart dynamic effects ===== */
+    .cart-badge.bump{animation:badgeBump .45s cubic-bezier(.36,.07,.19,.97)}
+    @keyframes badgeBump{0%{transform:scale(1)}30%{transform:scale(1.55)}60%{transform:scale(.82)}100%{transform:scale(1)}}
+    .cart-item-enter{animation:ciEnter .42s cubic-bezier(.21,1.02,.73,1) both}
+    @keyframes ciEnter{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+    .cart-item-leave{animation:ciLeave .4s ease forwards;pointer-events:none}
+    @keyframes ciLeave{to{opacity:0;transform:translateX(60px) scale(.9)}}
+    .qty-flash{animation:qtyFlash .55s ease}
+    @keyframes qtyFlash{0%{color:#E67E22;transform:scale(1.22)}100%{transform:scale(1)}}
+    .qbtn{transition:transform .12s,background .15s}
+    .qbtn:active{transform:scale(.82)}
+    .fly-img{position:fixed;z-index:10000;pointer-events:none;object-fit:contain;border-radius:8px;
+      transition:left .8s cubic-bezier(.55,-0.25,.55,1.15),top .8s cubic-bezier(.55,-0.25,.55,1.15),width .8s ease,height .8s ease,opacity .8s ease}
   </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -123,7 +153,7 @@
 <!-- ===== ANNOUNCEMENT BAR ===== -->
 <div class="bg-on-background text-trophy-gold py-2 overflow-hidden ticker-wrap" style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:700">
   <div class="ticker-content">
-    🚀 Envíos EN EL DÍA al AMBA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$130.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;·&nbsp; 🚀 Envíos EN EL DÍA al AMBA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$130.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;&nbsp;
+    🚀 Envíos EN EL DÍA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$40.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;·&nbsp; 🚀 Envíos EN EL DÍA comprando antes de las 14hs &nbsp;·&nbsp; 🎁 ENVÍO GRATIS en compras +$40.000 &nbsp;·&nbsp; ⚽ 980 figuritas del Mundial FIFA 2026 Panini &nbsp;·&nbsp; 📦 Envíos a todo Argentina &nbsp;·&nbsp; 💳 Pagá por transferencia bancaria &nbsp;&nbsp;
   </div>
 </div>
 
@@ -131,8 +161,7 @@
 <header id="topnav" class="hidden md:flex bg-pitch-green sticky top-0 z-50 border-b-2 border-primary items-center justify-between px-12 py-3" style="box-shadow:0 2px 8px rgba(13,107,72,.35)">
   <!-- Logo + Brand -->
   <button onclick="nav('catalog')" class="flex items-center gap-3 group">
-    <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Campeón Figus" class="h-11 w-11 rounded-full border-2 border-trophy-gold object-cover" style="box-shadow:2px 2px 0 #FFF200"/>
-    <span style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase;letter-spacing:-0.03em" class="group-hover:scale-105 transition-transform inline-block">Campeón Figus</span>
+    <img src="catalogo/panini_logo.png" alt="Panini Oficial" class="h-9 object-contain group-hover:scale-105 transition-transform" style="filter:drop-shadow(1px 1px 0 rgba(0,0,0,.3))"/>
   </button>
 
   <!-- Nav links -->
@@ -154,26 +183,21 @@
         class="placeholder:text-white/60"/>
       <span class="material-symbols-outlined mso absolute right-2.5 top-1/2 -translate-y-1/2 text-white/70" style="font-size:17px">search</span>
     </div>
-    <button onclick="nav('cart')" class="relative text-trophy-gold hover:scale-110 transition-transform">
+    <button id="cart-d" onclick="nav('cart')" class="relative text-trophy-gold hover:scale-110 transition-transform">
       <span class="material-symbols-outlined mso-fill" style="font-size:28px">shopping_cart</span>
       <span id="badge-d" class="cart-badge hidden">0</span>
     </button>
-    <!-- WhatsApp -->
-    <a href="https://wa.me/541151244613" target="_blank" class="flex items-center gap-1.5 bg-trophy-gold text-on-background rounded-full px-4 py-2 s-border hover:s-shadow transition-all" style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:700;box-shadow:2px 2px 0 #181b23">
-      <span class="material-symbols-outlined mso-fill" style="font-size:16px">chat</span> WhatsApp
-    </a>
   </div>
 </header>
 
 <!-- ===== MOBILE HEADER ===== -->
 <header class="md:hidden flex items-center justify-between bg-pitch-green px-4 py-3 sticky top-0 z-50 border-b-2 border-primary" style="box-shadow:0 2px 6px rgba(13,107,72,.4)">
   <button onclick="nav('catalog')" class="flex items-center gap-2">
-    <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-9 w-9 rounded-full border-2 border-trophy-gold object-cover"/>
-    <span style="font-family:'Lexend',sans-serif;font-size:16px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase">Campeón Figus</span>
+    <img src="catalogo/panini_logo.png" alt="Panini Oficial" class="h-7 object-contain"/>
   </button>
   <div class="flex items-center gap-3">
     <button onclick="toggleMSearch()" class="text-white"><span class="material-symbols-outlined" style="font-size:22px">search</span></button>
-    <button onclick="nav('cart')" class="relative text-trophy-gold">
+    <button id="cart-m" onclick="nav('cart')" class="relative text-trophy-gold">
       <span class="material-symbols-outlined mso-fill" style="font-size:24px">shopping_cart</span>
       <span id="badge-m" class="cart-badge hidden">0</span>
     </button>
@@ -206,9 +230,6 @@
         <p class="text-white/80 mt-3 text-sm md:text-base max-w-md">980 figuritas · 48 selecciones · La colección más grande de la historia. Álbumes, sobres y combos con envío a todo el país.</p>
         <div class="flex gap-3 mt-5 flex-wrap">
           <button onclick="setFilter('combos')" class="bg-trophy-gold text-on-background s-border s-shadow-sm rounded-lg px-5 py-2.5" style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;transition:all .15s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Ver Combos</button>
-          <a href="https://wa.me/541151244613" target="_blank" class="flex items-center gap-2 bg-white/15 hover:bg-white/25 text-white rounded-lg px-5 py-2.5 border border-white/30 transition-all" style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:700">
-            <span class="material-symbols-outlined mso-fill" style="font-size:16px">chat</span> Consultar por WA
-          </a>
         </div>
       </div>
       <div class="flex gap-3 flex-shrink-0">
@@ -303,7 +324,7 @@
       <div class="flex flex-col items-center text-center gap-2">
         <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:34px">local_shipping</span>
         <p style="font-family:'Lexend',sans-serif;font-weight:700;color:#FFF200;font-size:13px">Envío en el día</p>
-        <p class="text-white/60 text-xs">Al AMBA comprando antes de las 14hs</p>
+        <p class="text-white/60 text-xs">Comprando antes de las 14hs</p>
       </div>
       <div class="flex flex-col items-center text-center gap-2">
         <span class="material-symbols-outlined mso-fill text-trophy-gold" style="font-size:34px">account_balance</span>
@@ -332,9 +353,6 @@
           <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase">Campeón Figus</span>
         </div>
         <p class="text-white/60 text-sm">Distribuidor oficial de figuritas<br>y artículos de colección · Argentina</p>
-        <a href="https://wa.me/541151244613" target="_blank" class="flex items-center gap-2 text-trophy-gold hover:text-white transition-colors text-sm mt-1" style="font-family:'Lexend',sans-serif;font-weight:700">
-          <span class="material-symbols-outlined mso-fill" style="font-size:18px">chat</span> +54 9 11 5124-4613
-        </a>
       </div>
       <div class="grid grid-cols-2 gap-x-12 gap-y-2 text-sm">
         <a href="#" class="text-white/60 hover:text-white transition-colors">Cómo Comprar</a>
@@ -342,7 +360,7 @@
         <a href="#" class="text-white/60 hover:text-white transition-colors">Política de Devolución</a>
         <a href="#" class="text-white/60 hover:text-white transition-colors">Quiénes Somos</a>
         <a href="#" class="text-white/60 hover:text-white transition-colors">Blog</a>
-        <a href="https://wa.me/541151244613" target="_blank" class="text-white/60 hover:text-white transition-colors">Contacto</a>
+        <a href="#" class="text-white/60 hover:text-white transition-colors">Contacto</a>
       </div>
       <div class="text-white/40 text-xs text-right">
         <p>© 2026 Campeón Figus Argentina.</p>
@@ -379,7 +397,7 @@
         <div id="progfill" class="h-full bg-primary relative transition-all duration-700 prog-bar-inner" style="width:0%"></div>
       </div>
       <div class="flex justify-between mt-1.5" style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:600;color:#6d7a6e">
-        <span>$0</span><span>Meta: $130.000</span>
+        <span>$0</span><span>Meta: $40.000</span>
       </div>
     </div>
 
@@ -400,12 +418,14 @@
           <h2 style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900" class="mb-4 pb-2 border-b-2 border-outline-variant">Resumen</h2>
           <div class="flex flex-col gap-2.5 text-sm mb-4">
             <div class="flex justify-between text-on-surface-variant"><span id="ccount">Subtotal</span><span id="csubt" class="font-bold text-on-background">$0</span></div>
-            <div class="flex justify-between text-on-surface-variant"><span>Descuentos</span><span class="font-bold text-primary">$0</span></div>
+            <div id="cdisc-row" class="justify-between text-on-surface-variant" style="display:none"><span id="cdisc-label">Descuento</span><span id="cdisc" class="font-bold text-primary">$0</span></div>
             <div class="flex justify-between text-on-surface-variant"><span>Envío est.</span><span id="cship" class="font-bold text-on-background">$5.500</span></div>
             <div class="mt-2 pt-2 border-t border-dashed border-outline-variant flex gap-2">
-              <input type="text" placeholder="Código promo" class="flex-grow inp uppercase" style="padding:8px;font-size:12px;font-family:'Lexend',sans-serif;font-weight:700"/>
-              <button class="bg-on-background text-clean-white rounded-lg px-3 py-1 text-xs" style="font-family:'Lexend',sans-serif;font-weight:700">Aplicar</button>
+              <input id="promo-input" type="text" placeholder="Código promo" class="flex-grow inp uppercase" style="padding:8px;font-size:12px;font-family:'Lexend',sans-serif;font-weight:700" onkeydown="if(event.key==='Enter'){event.preventDefault();applyPromo()}"/>
+              <button onclick="applyPromo()" class="bg-on-background text-clean-white rounded-lg px-3 py-1 text-xs hover:bg-primary transition-colors" style="font-family:'Lexend',sans-serif;font-weight:700">Aplicar</button>
             </div>
+            <p id="promo-msg" class="text-xs" style="font-family:'Lexend',sans-serif;font-weight:700;min-height:14px"></p>
+            <p class="text-[10px] text-outline -mt-1">Cupones: <button onclick="document.getElementById('promo-input').value='MUNDIAL10';applyPromo()" class="underline hover:text-primary font-bold">MUNDIAL10</button> · <button onclick="document.getElementById('promo-input').value='CAMPEON15';applyPromo()" class="underline hover:text-primary font-bold">CAMPEON15</button></p>
           </div>
           <div class="border-t-4 border-on-background pt-3 mb-5">
             <div class="flex justify-between items-center">
@@ -432,10 +452,9 @@
 <!-- ================================================================ -->
 <div id="pg-shipping" class="pg fade-in">
   <header class="w-full px-4 py-4 flex justify-center bg-pitch-green border-b-2 border-primary">
-    <div class="flex items-center gap-3">
-      <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-10 w-10 rounded-full border-2 border-trophy-gold object-cover"/>
-      <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;color:#FFF200;font-style:italic;text-transform:uppercase">Campeón Figus</span>
-    </div>
+    <button onclick="nav('catalog')" class="flex items-center gap-3">
+      <img src="catalogo/panini_logo.png" alt="Panini Oficial" class="h-8 object-contain" style="filter:drop-shadow(1px 1px 0 rgba(0,0,0,.3))"/>
+    </button>
   </header>
   <main class="max-w-screen-lg mx-auto px-4 py-8 md:py-12 mb-24 md:mb-0">
     <div class="flex flex-col lg:flex-row gap-8 items-start">
@@ -477,7 +496,7 @@
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <label class="text-sm font-semibold block mb-1" for="s-prov">Provincia *</label>
-                    <select class="inp" id="s-prov" required>
+                    <select class="inp" id="s-prov" required onchange="updateDeliveryEstimate()">
                       <option value="" disabled selected>Seleccioná...</option>
                       <option>Ciudad Autónoma de Buenos Aires</option>
                       <option>Buenos Aires</option>
@@ -497,6 +516,35 @@
                   <div><label class="text-sm font-semibold block mb-1" for="s-city">Ciudad *</label><input class="inp" id="s-city" placeholder="Ej: Rosario" required type="text"/></div>
                 </div>
               </div>
+            </div>
+            <!-- ===== Mapa de entrega ===== -->
+            <div>
+              <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+                <p style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:#6d7a6e;text-transform:uppercase" class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined mso-fill text-primary" style="font-size:16px">map</span> Ubicación de Entrega
+                </p>
+                <div class="flex gap-2">
+                  <button type="button" onclick="geocodeAddress()" class="flex items-center gap-1 bg-surface-container text-on-background rounded-lg px-3 py-1.5 border border-outline-variant hover:bg-surface-container-high transition-colors" style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700">
+                    <span class="material-symbols-outlined" style="font-size:14px">search</span> Buscar dirección
+                  </button>
+                  <button type="button" onclick="useMyLocation()" class="flex items-center gap-1 bg-pitch-green text-white rounded-lg px-3 py-1.5 hover:bg-primary transition-colors" style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700">
+                    <span class="material-symbols-outlined mso-fill" style="font-size:14px">my_location</span> Mi ubicación
+                  </button>
+                </div>
+              </div>
+              <div id="ship-map" class="w-full rounded-xl border-2 border-outline-variant overflow-hidden bg-surface-container" style="height:280px;z-index:1"></div>
+              <p id="map-status" class="text-xs text-on-surface-variant mt-2 flex items-center gap-1.5">
+                <span class="material-symbols-outlined" style="font-size:14px">info</span>
+                <span>Ingresá tu dirección y tocá "Buscar dirección", o arrastrá el marcador para ajustar el punto exacto.</span>
+              </p>
+            </div>
+            <!-- ===== Estimación de entrega ===== -->
+            <div id="delivery-estimate" class="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4" style="display:none">
+              <span class="material-symbols-outlined mso-fill text-pitch-green flex-shrink-0" style="font-size:22px">local_shipping</span>
+              <p class="text-sm text-pitch-green leading-relaxed">
+                <strong id="delivery-zone"></strong><br>
+                <span id="delivery-time" class="text-on-surface-variant"></span>
+              </p>
             </div>
             <div class="pt-4 border-t-2 border-surface-variant flex items-center justify-between flex-wrap gap-3">
               <button type="button" onclick="nav('cart')" class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline" style="font-family:'Lexend',sans-serif">
@@ -534,10 +582,9 @@
 <!-- ================================================================ -->
 <div id="pg-payment" class="pg fade-in">
   <header class="w-full px-4 py-4 flex justify-center bg-clean-white border-b border-outline-variant">
-    <div class="flex items-center gap-3">
-      <img src="stitch_tienda_de_figuritas_mundial/campe_n_figus_logo/screen.png" alt="Logo" class="h-10 w-10 rounded-full border-2 border-pitch-green object-cover"/>
-      <span style="font-family:'Lexend',sans-serif;font-size:18px;font-weight:900;color:#0D6B48;font-style:italic;text-transform:uppercase">Campeón Figus</span>
-    </div>
+    <button onclick="nav('catalog')" class="flex items-center gap-3">
+      <img src="catalogo/panini_logo.png" alt="Panini Oficial" class="h-8 object-contain"/>
+    </button>
   </header>
 
   <main class="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-5 mb-24 md:mb-0">
@@ -561,6 +608,29 @@
       Realizá la transferencia a la cuenta de abajo. Tu pedido <strong>no se procesa</strong> hasta confirmar el pago. Subí el comprobante para agilizar el proceso.
     </p>
 
+    <!-- Countdown timer -->
+    <div id="pay-countdown" class="flex items-center gap-4 bg-clean-white rounded-xl border-2 border-outline-variant p-4 s-shadow-sm">
+      <div class="countdown-ring flex-shrink-0">
+        <svg viewBox="0 0 120 120" width="92" height="92">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="#e0e2ed" stroke-width="9"/>
+          <circle id="pay-timer-ring" cx="60" cy="60" r="52" fill="none" stroke="#006d37" stroke-width="9"
+            stroke-linecap="round" stroke-dasharray="326.726" stroke-dashoffset="0"
+            transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s linear, stroke .4s"/>
+        </svg>
+        <div class="countdown-label">
+          <span id="pay-timer" style="font-family:'Lexend',sans-serif;font-size:22px;font-weight:900;line-height:1">15:00</span>
+          <span style="font-family:'Lexend',sans-serif;font-size:9px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.05em">min</span>
+        </div>
+      </div>
+      <div class="flex-grow">
+        <p style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:900" class="flex items-center gap-1.5 text-on-background">
+          <span class="material-symbols-outlined mso-fill text-action-orange" style="font-size:18px">timer</span>
+          Tiempo para pagar
+        </p>
+        <p id="pay-timer-msg" class="text-on-surface-variant text-xs mt-1 leading-relaxed">Tenés <strong>15 minutos</strong> para realizar la transferencia y mantener tu pedido reservado.</p>
+      </div>
+    </div>
+
     <!-- Bank card -->
     <div class="bg-clean-white rounded-xl border border-outline-variant overflow-hidden s-shadow-sm">
       <div class="bg-pitch-green px-5 py-3 flex items-center gap-3">
@@ -569,27 +639,19 @@
       </div>
       <div class="p-5 flex flex-col gap-3">
         <div class="flex justify-between items-center py-2 border-b border-surface-variant">
-          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Titular</span>
-          <span class="font-bold text-sm">Campeón Figus</span>
-        </div>
-        <div class="flex justify-between items-center py-2 border-b border-surface-variant">
-          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Banco</span>
-          <span class="font-bold text-sm">Mercado Pago / Transferencia</span>
-        </div>
-        <div class="flex justify-between items-center py-2 border-b border-surface-variant">
-          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">CVU/CBU</span>
+          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Alias</span>
           <div class="flex items-center gap-2">
-            <span id="cbu-val" style="font-family:'Lexend',sans-serif;font-weight:800;color:#0D6B48;font-size:13px;letter-spacing:.02em">0000003100073724756015</span>
-            <button onclick="cpyText('0000003100073724756015','CVU copiado ✓')" class="p-1.5 rounded text-outline hover:text-pitch-green hover:bg-surface-container transition-all" title="Copiar CBU">
+            <span style="font-family:'Lexend',sans-serif;font-weight:800;color:#0D6B48;font-size:13px">arg.panini</span>
+            <button onclick="cpyText('arg.panini','Alias copiado ✓')" class="p-1.5 rounded text-outline hover:text-pitch-green hover:bg-surface-container transition-all" title="Copiar Alias">
               <span class="material-symbols-outlined" style="font-size:17px">content_copy</span>
             </button>
           </div>
         </div>
         <div class="flex justify-between items-center py-2">
-          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">Alias</span>
+          <span style="font-family:'Lexend',sans-serif;font-size:11px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.06em">CVU/CBU</span>
           <div class="flex items-center gap-2">
-            <span style="font-family:'Lexend',sans-serif;font-weight:800;color:#0D6B48;font-size:13px;text-transform:uppercase">CAMPEON.FIGUS</span>
-            <button onclick="cpyText('CAMPEON.FIGUS','Alias copiado ✓')" class="p-1.5 rounded text-outline hover:text-pitch-green hover:bg-surface-container transition-all" title="Copiar Alias">
+            <span id="cbu-val" style="font-family:'Lexend',sans-serif;font-weight:800;color:#0D6B48;font-size:13px;letter-spacing:.02em">0000139300000018715383</span>
+            <button onclick="cpyText('0000139300000018715383','CVU copiado ✓')" class="p-1.5 rounded text-outline hover:text-pitch-green hover:bg-surface-container transition-all" title="Copiar CBU">
               <span class="material-symbols-outlined" style="font-size:17px">content_copy</span>
             </button>
           </div>
@@ -597,14 +659,11 @@
       </div>
     </div>
 
-    <!-- WhatsApp tip -->
+    <!-- Tip -->
     <div class="flex items-start gap-3 bg-green-50 border border-green-200 rounded-xl p-4">
       <span class="material-symbols-outlined mso-fill text-pitch-green flex-shrink-0" style="font-size:22px">tips_and_updates</span>
       <p class="text-sm text-pitch-green leading-relaxed">
-        <strong>¿Realizaste la transferencia?</strong> Envianos el comprobante por WhatsApp para confirmar tu pedido más rápido.<br>
-        <a href="https://wa.me/541151244613?text=Hola!%20Realicé%20la%20transferencia%20para%20mi%20pedido." target="_blank" class="inline-flex items-center gap-1 mt-2 font-bold underline hover:no-underline">
-          <span class="material-symbols-outlined mso-fill" style="font-size:15px">chat</span> Enviar por WhatsApp → +54 9 11 5124-4613
-        </a>
+        <strong>¿Realizaste la transferencia?</strong> Subí el comprobante aquí abajo para confirmar tu pedido más rápido.
       </p>
     </div>
 
@@ -653,18 +712,13 @@
       </div>
       <div>
         <h1 style="font-family:'Lexend',sans-serif;font-size:30px;font-weight:900" class="text-on-background">¡Pedido Confirmado! 🎉</h1>
-        <p class="text-on-surface-variant mt-2 text-sm leading-relaxed">Tu pedido fue recibido. Lo procesamos una vez que confirmemos la transferencia. Te contactaremos por WhatsApp o email.</p>
+        <p class="text-on-surface-variant mt-2 text-sm leading-relaxed">Tu pedido fue recibido. Lo procesamos una vez que confirmemos la transferencia. Te contactaremos por email.</p>
       </div>
       <div class="bg-surface-container rounded-xl p-5 w-full text-left space-y-2.5 text-sm">
         <div class="flex justify-between"><span class="text-on-surface-variant">N° de Orden</span><span id="ord-num" style="font-family:'Lexend',sans-serif;font-weight:800">#CF-0001</span></div>
         <div class="flex justify-between"><span class="text-on-surface-variant">Estado</span><span class="text-primary font-bold" style="font-family:'Lexend',sans-serif">Pendiente acreditación</span></div>
         <div class="flex justify-between"><span class="text-on-surface-variant">Total</span><span id="ord-total" style="font-family:'Lexend',sans-serif;font-weight:900">$0</span></div>
       </div>
-      <!-- WhatsApp button -->
-      <a href="https://wa.me/541151244613?text=Hola!%20Realicé%20mi%20pedido%20en%20Campeón%20Figus." target="_blank"
-        class="w-full flex items-center justify-center gap-2 bg-pitch-green text-white rounded-xl py-3.5 s-border" style="font-family:'Lexend',sans-serif;font-size:15px;font-weight:900;box-shadow:4px 4px 0 #181b23">
-        <span class="material-symbols-outlined mso-fill" style="font-size:20px">chat</span> Contactar por WhatsApp
-      </a>
       <button onclick="startOver()" class="w-full bg-trophy-gold text-on-background rounded-xl py-3.5 s-border s-shadow hover:-translate-y-0.5 transition-transform flex items-center justify-center gap-2" style="font-family:'Lexend',sans-serif;font-size:15px;font-weight:900">
         <span class="material-symbols-outlined mso-fill">home</span> Volver al Catálogo
       </button>
@@ -679,11 +733,7 @@
     <span class="material-symbols-outlined" style="font-size:22px">style</span>
     <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Catálogo</span>
   </button>
-  <a href="https://wa.me/541151244613" target="_blank" class="flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
-    <span class="material-symbols-outlined mso-fill" style="font-size:22px;color:#0D6B48">chat</span>
-    <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">WhatsApp</span>
-  </a>
-  <button onclick="nav('cart')" class="relative flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
+  <button id="cart-bn" onclick="nav('cart')" class="relative flex flex-col items-center rounded-xl px-4 py-1.5 text-on-surface-variant">
     <span class="material-symbols-outlined mso-fill" style="font-size:22px">shopping_basket</span>
     <span style="font-family:'Lexend',sans-serif;font-size:10px;font-weight:700" class="mt-0.5">Carrito</span>
     <span id="badge-bn" class="hidden absolute top-1 right-2 bg-error text-on-error text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-surface-container-highest" style="font-family:'Lexend',sans-serif">0</span>
@@ -794,8 +844,9 @@ function nav(pg){
   if(el){el.classList.add('active');setTimeout(()=>el.classList.add('fade-in'),10)}
   window.scrollTo({top:0,behavior:'smooth'});
   if(pg==='cart'){renderCart()}
-  if(pg==='shipping'){renderShipSummary()}
-  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(cartTotal()+(cartTotal()>=130000?0:5500))}
+  if(pg==='shipping'){renderShipSummary();setTimeout(initShipMap,120)}
+  if(pg!=='payment')stopPayTimer();
+  if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(grandTotal());startPayTimer()}
 }
 
 // ========== PRODUCTS ==========
@@ -863,7 +914,7 @@ function renderProds(){
             <span style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900">${fmt(p.price)} <span style="font-size:11px;font-weight:400;color:#6d7a6e">ARS</span></span>
           </div>
           ${p.stock
-            ?`<button onclick="event.stopPropagation();addToCart(${p.id})" 
+            ?`<button onclick="event.stopPropagation();addToCart(${p.id},event)" 
                 class="bg-trophy-gold text-on-background rounded-lg border-2 border-on-background flex items-center gap-1 px-2.5 py-2 hover:s-shadow hover:-translate-y-0.5 transition-all"
                 style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:800;box-shadow:2px 2px 0 #181b23;min-width:38px">
                 <span class="material-symbols-outlined mso-fill" style="font-size:16px">add_shopping_cart</span>
@@ -880,23 +931,119 @@ function renderProds(){
 
 function getCatLabel(c){return{combos:'🎁 Combo',albums:'📗 Álbum',figuritas:'⚽ Sobres',cromos:'🃏 Cromos'}[c]||c}
 
+// ========== PROMO / TOTALS ==========
+const PROMOS={
+  'MUNDIAL10':{rate:.10,label:'10% OFF'},
+  'FIGUS5':{rate:.05,label:'5% OFF'},
+  'CAMPEON15':{rate:.15,label:'15% OFF'}
+};
+let appliedPromo=JSON.parse(localStorage.getItem('cf-promo')||'null');
+
+function discountAmount(){return appliedPromo?Math.round(cartTotal()*appliedPromo.rate):0}
+function shipCost(){return cartTotal()>=40000?0:5500}
+function grandTotal(){return cartTotal()-discountAmount()+shipCost()}
+
+function applyPromo(){
+  const inp=document.getElementById('promo-input');
+  const msg=document.getElementById('promo-msg');
+  const code=(inp?.value||'').trim().toUpperCase();
+  if(!code){if(msg){msg.textContent='Ingresá un código';msg.style.color='#ba1a1a'}return}
+  const p=PROMOS[code];
+  if(!p){
+    appliedPromo=null;localStorage.removeItem('cf-promo');
+    if(msg){msg.textContent='Código inválido ✗';msg.style.color='#ba1a1a'}
+    updateCartTotals();return;
+  }
+  appliedPromo={code,rate:p.rate,label:p.label};
+  localStorage.setItem('cf-promo',JSON.stringify(appliedPromo));
+  if(msg){msg.textContent='✓ '+p.label+' aplicado';msg.style.color='#006d37'}
+  showToast('🎟️ Cupón aplicado: '+p.label);
+  updateCartTotals();
+}
+
+// ========== ANIMATION HELPERS ==========
+function animateNumber(el,to){
+  if(!el)return;
+  const from=parseInt(el.dataset.val||'0',10)||0;
+  el.dataset.val=to;
+  if(from===to){el.textContent=fmt(to);return}
+  const dur=450,start=performance.now();
+  function step(now){
+    const p=Math.min(1,(now-start)/dur);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=fmt(Math.round(from+(to-from)*ease));
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function bumpBadges(){
+  ['badge-d','badge-m','badge-bn'].forEach(id=>{
+    const e=document.getElementById(id);
+    if(e&&!e.classList.contains('hidden')){e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump')}
+  });
+}
+
+function flyToCart(img){
+  if(!img)return;
+  const target=['cart-d','cart-m','cart-bn'].map(i=>document.getElementById(i)).find(e=>e&&e.offsetParent!==null);
+  if(!target)return;
+  const s=img.getBoundingClientRect(),t=target.getBoundingClientRect();
+  const fly=img.cloneNode(true);
+  fly.className='fly-img';
+  fly.style.left=s.left+'px';fly.style.top=s.top+'px';
+  fly.style.width=s.width+'px';fly.style.height=s.height+'px';fly.style.opacity='1';
+  document.body.appendChild(fly);
+  requestAnimationFrame(()=>{
+    fly.style.left=(t.left+t.width/2-16)+'px';
+    fly.style.top=(t.top+t.height/2-16)+'px';
+    fly.style.width='32px';fly.style.height='32px';fly.style.opacity='.25';
+  });
+  setTimeout(()=>{fly.remove();bumpBadges()},820);
+}
+
 // ========== CART OPERATIONS ==========
-function addToCart(id){
+function addToCart(id,e){
   const p=PRODUCTS.find(x=>x.id===id);
   if(!p||!p.stock)return;
   const ex=cart.find(x=>x.id===id);
   if(ex)ex.qty++;
   else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:1});
   saveCart();updateBadges();
-  showToast('✅ '+p.name.substring(0,30)+'...');
+  if(e&&e.currentTarget){
+    const art=e.currentTarget.closest('article');
+    const img=art&&art.querySelector('img');
+    if(img)flyToCart(img);else bumpBadges();
+  }else bumpBadges();
+  showToast('✅ Agregado: '+p.name);
 }
 
-function rmFromCart(id){cart=cart.filter(x=>x.id!==id);saveCart();updateBadges();renderCart()}
+function rmFromCart(id){
+  const art=document.getElementById('ci-'+id);
+  let done=false;
+  const finish=()=>{
+    if(done)return;done=true;
+    cart=cart.filter(x=>x.id!==id);saveCart();updateBadges();
+    if(art)art.remove();
+    if(!cart.length)renderCart();else updateCartTotals();
+  };
+  if(art){
+    art.classList.add('cart-item-leave');
+    art.addEventListener('animationend',finish,{once:true});
+    setTimeout(finish,420);
+  }else finish();
+}
+
 function chgQty(id,d){
   const it=cart.find(x=>x.id===id);if(!it)return;
-  it.qty=Math.max(1,it.qty+d);
-  if(it.qty<1){rmFromCart(id);return}
-  saveCart();updateBadges();renderCart();
+  const nq=it.qty+d;
+  if(nq<1){rmFromCart(id);return}
+  it.qty=nq;saveCart();updateBadges();bumpBadges();
+  const qEl=document.getElementById('qty-'+id);
+  const lEl=document.getElementById('line-'+id);
+  if(qEl)qEl.textContent=it.qty;
+  if(lEl){lEl.textContent=fmt(it.price*it.qty);lEl.classList.remove('qty-flash');void lEl.offsetWidth;lEl.classList.add('qty-flash')}
+  updateCartTotals();
 }
 
 function updateBadges(){
@@ -914,39 +1061,58 @@ function renderCart(){
   if(!list)return;
   if(!cart.length){
     empty.classList.remove('hidden');cont.style.display='none';
+    const sb=document.getElementById('csubt');if(sb)sb.dataset.val='0';
+    const ct=document.getElementById('ctotal');if(ct)ct.dataset.val='0';
     updateProg(0);return;
   }
   empty.classList.add('hidden');cont.style.display='';
-  const total=cartTotal();const cnt=cartCount();
-  list.innerHTML=cart.map(it=>`
-    <article class="bg-clean-white rounded-xl border border-outline-variant p-4 flex gap-4 items-center hover:shadow-[4px_4px_0_#181b23] transition-shadow duration-200">
+  if(appliedPromo){
+    const pin=document.getElementById('promo-input');if(pin&&!pin.value)pin.value=appliedPromo.code;
+    const pmsg=document.getElementById('promo-msg');if(pmsg){pmsg.textContent='✓ '+appliedPromo.label+' aplicado';pmsg.style.color='#006d37'}
+  }
+  list.innerHTML=cart.map((it,i)=>`
+    <article id="ci-${it.id}" class="cart-item-enter bg-clean-white rounded-xl border border-outline-variant p-4 flex gap-4 items-center hover:shadow-[4px_4px_0_#181b23] transition-shadow duration-200" style="animation-delay:${i*60}ms">
       <div class="w-20 h-20 md:w-24 md:h-24 bg-surface-container-low rounded-lg flex-shrink-0 flex items-center justify-center p-1 overflow-hidden border border-outline-variant">
         <img src="${it.img}" alt="${it.name}" class="max-h-full max-w-full object-contain"/>
       </div>
       <div class="flex-grow min-w-0">
         <h3 style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:800;line-height:1.25" class="text-on-background line-clamp-2 mb-1">${it.name}</h3>
-        <p style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900" class="text-on-background mt-1">${fmt(it.price*it.qty)}</p>
+        <p class="text-xs text-outline" style="font-family:'Lexend',sans-serif;font-weight:600">${fmt(it.price)} c/u</p>
+        <p id="line-${it.id}" style="font-family:'Lexend',sans-serif;font-size:17px;font-weight:900" class="text-on-background mt-1">${fmt(it.price*it.qty)}</p>
       </div>
       <div class="flex flex-col items-end gap-3 flex-shrink-0">
-        <button onclick="rmFromCart(${it.id})" class="text-outline hover:text-error transition-colors p-1 rounded hover:bg-error-container"><span class="material-symbols-outlined" style="font-size:20px">delete</span></button>
+        <button onclick="rmFromCart(${it.id})" class="text-outline hover:text-error transition-colors p-1 rounded hover:bg-error-container" title="Quitar"><span class="material-symbols-outlined" style="font-size:20px">delete</span></button>
         <div class="flex items-center border-2 border-outline-variant rounded-lg overflow-hidden bg-surface-container-lowest">
-          <button onclick="chgQty(${it.id},-1)" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors font-bold text-lg">−</button>
-          <span style="font-family:'Lexend',sans-serif;font-weight:800;font-size:14px" class="w-10 text-center border-x-2 border-outline-variant py-1">${it.qty}</span>
-          <button onclick="chgQty(${it.id},1)" class="w-8 h-8 flex items-center justify-center hover:bg-surface-container transition-colors font-bold text-lg">+</button>
+          <button onclick="chgQty(${it.id},-1)" class="qbtn w-8 h-8 flex items-center justify-center hover:bg-surface-container font-bold text-lg">−</button>
+          <span id="qty-${it.id}" style="font-family:'Lexend',sans-serif;font-weight:800;font-size:14px" class="w-10 text-center border-x-2 border-outline-variant py-1">${it.qty}</span>
+          <button onclick="chgQty(${it.id},1)" class="qbtn w-8 h-8 flex items-center justify-center hover:bg-surface-container font-bold text-lg">+</button>
         </div>
       </div>
     </article>`).join('');
 
-  const ship=total>=130000?0:5500;
-  document.getElementById('ccount').textContent=`Subtotal (${cnt} item${cnt!==1?'s':''})`;
-  document.getElementById('csubt').textContent=fmt(total);
-  document.getElementById('cship').textContent=ship===0?'¡Gratis! 🎉':fmt(ship);
-  document.getElementById('ctotal').textContent=fmt(total+ship);
+  updateCartTotals();
+}
+
+function updateCartTotals(){
+  const total=cartTotal();const cnt=cartCount();
+  const disc=discountAmount();const ship=shipCost();
+  const cc=document.getElementById('ccount');
+  if(cc)cc.textContent=`Subtotal (${cnt} item${cnt!==1?'s':''})`;
+  animateNumber(document.getElementById('csubt'),total);
+  const drow=document.getElementById('cdisc-row');
+  const dEl=document.getElementById('cdisc');
+  const dLabel=document.getElementById('cdisc-label');
+  if(drow)drow.style.display=disc>0?'flex':'none';
+  if(dEl)dEl.textContent='−'+fmt(disc);
+  if(dLabel&&appliedPromo)dLabel.textContent='Descuento ('+appliedPromo.label+')';
+  const shEl=document.getElementById('cship');
+  if(shEl)shEl.textContent=ship===0?'¡Gratis! 🎉':fmt(ship);
+  animateNumber(document.getElementById('ctotal'),total-disc+ship);
   updateProg(total);
 }
 
 function updateProg(total){
-  const THRESH=130000;
+  const THRESH=40000;
   const pct=Math.min(100,(total/THRESH)*100);
   const fill=document.getElementById('progfill');
   const txt=document.getElementById('progtext');
@@ -976,12 +1142,199 @@ function renderShipSummary(){
         <p style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:800;color:#0D6B48" class="mt-1">${fmt(it.price*it.qty)}</p>
       </div>
     </div>`).join('');
-  const t=cartTotal();
-  document.getElementById('ship-subt').textContent=fmt(t);
-  document.getElementById('ship-tot').textContent=fmt(t);
+  document.getElementById('ship-subt').textContent=fmt(cartTotal());
+  document.getElementById('ship-tot').textContent=fmt(grandTotal());
+}
+
+// ========== SHIPPING MAP ==========
+let shipMap=null,shipMarker=null;
+const DEFAULT_LATLNG=[-34.6037,-58.3816]; // Buenos Aires
+
+function setMapStatus(html,color){
+  const el=document.getElementById('map-status');
+  if(!el)return;
+  el.innerHTML='<span class="material-symbols-outlined" style="font-size:14px">info</span><span>'+html+'</span>';
+  el.style.color=color||'';
+}
+
+function initShipMap(){
+  if(typeof L==='undefined')return;
+  const cont=document.getElementById('ship-map');
+  if(!cont)return;
+  if(!shipMap){
+    shipMap=L.map('ship-map',{scrollWheelZoom:false}).setView(DEFAULT_LATLNG,5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      maxZoom:19,attribution:'© OpenStreetMap'
+    }).addTo(shipMap);
+    shipMarker=L.marker(DEFAULT_LATLNG,{draggable:true}).addTo(shipMap);
+    shipMarker.on('dragend',()=>{
+      const p=shipMarker.getLatLng();
+      reverseGeocode(p.lat,p.lng);
+    });
+    shipMap.on('click',(e)=>{
+      shipMarker.setLatLng(e.latlng);
+      reverseGeocode(e.latlng.lat,e.latlng.lng);
+    });
+  }
+  setTimeout(()=>shipMap.invalidateSize(),60);
+}
+
+function buildAddressQuery(){
+  const addr=document.getElementById('s-addr')?.value.trim()||'';
+  const city=document.getElementById('s-city')?.value.trim()||'';
+  const prov=document.getElementById('s-prov')?.value.trim()||'';
+  const zip=document.getElementById('s-zip')?.value.trim()||'';
+  const parts=[addr,city,prov,zip,'Argentina'].filter(Boolean);
+  return parts.join(', ');
+}
+
+function geocodeAddress(){
+  initShipMap();
+  const q=buildAddressQuery();
+  if(!document.getElementById('s-addr')?.value.trim()){
+    setMapStatus('Ingresá al menos la calle y número para ubicarte en el mapa.','#ba1a1a');
+    return;
+  }
+  setMapStatus('Buscando dirección en el mapa…');
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ar&q='+encodeURIComponent(q),{headers:{'Accept-Language':'es'}})
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data||!data.length){
+        setMapStatus('No encontramos esa dirección exacta. Arrastrá el marcador para ajustarla.','#E67E22');
+        return;
+      }
+      const lat=parseFloat(data[0].lat),lon=parseFloat(data[0].lon);
+      shipMap.setView([lat,lon],16);
+      shipMarker.setLatLng([lat,lon]);
+      setMapStatus('📍 Dirección ubicada. Arrastrá el marcador si necesitás ajustarla.','#006d37');
+      showToast('📍 Dirección ubicada en el mapa');
+    })
+    .catch(()=>setMapStatus('No pudimos conectar con el mapa. Probá de nuevo.','#ba1a1a'));
+}
+
+function useMyLocation(){
+  initShipMap();
+  if(!navigator.geolocation){
+    setMapStatus('Tu navegador no permite geolocalización.','#ba1a1a');return;
+  }
+  setMapStatus('Obteniendo tu ubicación…');
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      const{latitude,longitude}=pos.coords;
+      shipMap.setView([latitude,longitude],16);
+      shipMarker.setLatLng([latitude,longitude]);
+      reverseGeocode(latitude,longitude,true);
+      showToast('📍 Ubicación detectada');
+    },
+    ()=>setMapStatus('No pudimos acceder a tu ubicación. Revisá los permisos.','#E67E22'),
+    {enableHighAccuracy:true,timeout:8000}
+  );
+}
+
+function reverseGeocode(lat,lon,fill){
+  setMapStatus('Actualizando dirección…');
+  fetch('https://nominatim.openstreetmap.org/reverse?format=json&lat='+lat+'&lon='+lon,{headers:{'Accept-Language':'es'}})
+    .then(r=>r.json())
+    .then(d=>{
+      const a=d.address||{};
+      if(fill){
+        const road=[a.road,a.house_number].filter(Boolean).join(' ');
+        if(road){const e=document.getElementById('s-addr');if(e&&!e.value)e.value=road}
+        const city=a.city||a.town||a.village||a.suburb;
+        if(city){const e=document.getElementById('s-city');if(e&&!e.value)e.value=city}
+        if(a.postcode){const e=document.getElementById('s-zip');if(e&&!e.value)e.value=a.postcode}
+        if(a.state){matchProvince(a.state)}
+      }
+      const label=d.display_name?d.display_name.split(',').slice(0,3).join(', '):'Punto seleccionado';
+      setMapStatus('📍 '+label,'#006d37');
+      updateDeliveryEstimate();
+    })
+    .catch(()=>setMapStatus('Punto seleccionado en el mapa.','#006d37'));
+}
+
+function matchProvince(state){
+  const sel=document.getElementById('s-prov');if(!sel)return;
+  const s=state.toLowerCase();
+  for(const opt of sel.options){
+    const o=opt.value.toLowerCase();
+    if(o&&(o.includes(s)||s.includes(o))){sel.value=opt.value;updateDeliveryEstimate();return}
+  }
+  if(s.includes('buenos aires')&&s.includes('ciudad'))sel.value='Ciudad Autónoma de Buenos Aires';
+}
+
+const DELIVERY_ZONES={
+  'Ciudad Autónoma de Buenos Aires':{zone:'CABA · Envío en el día',time:'Entrega estimada en 1 día hábil.'},
+  'Buenos Aires':{zone:'Provincia de Buenos Aires',time:'Entrega estimada en 1 día hábil.'},
+  'Córdoba':{zone:'Interior del país',time:'Entrega estimada en 1 día hábil.'},
+  'Santa Fe':{zone:'Interior del país',time:'Entrega estimada en 1 día hábil.'},
+  'Mendoza':{zone:'Interior del país',time:'Entrega estimada en 1 día hábil.'}
+};
+
+function updateDeliveryEstimate(){
+  const prov=document.getElementById('s-prov')?.value;
+  const box=document.getElementById('delivery-estimate');
+  if(!box)return;
+  if(!prov){box.style.display='none';return}
+  const info=DELIVERY_ZONES[prov]||{zone:prov,time:'Entrega estimada en 1 día hábil.'};
+  document.getElementById('delivery-zone').textContent='Envío a '+info.zone;
+  document.getElementById('delivery-time').textContent=info.time;
+  box.style.display='flex';
 }
 
 function goToPay(e){e.preventDefault();nav('payment')}
+
+// ========== PAYMENT TIMER ==========
+const PAY_DURATION=15*60; // 15 minutos
+const RING_CIRC=326.726;  // 2 * PI * 52
+let payTimerInt=null,payRemaining=PAY_DURATION;
+
+function fmtClock(s){
+  const m=Math.floor(s/60),sec=s%60;
+  return m+':'+String(sec).padStart(2,'0');
+}
+
+function renderPayTimer(){
+  const t=document.getElementById('pay-timer');
+  const ring=document.getElementById('pay-timer-ring');
+  const box=document.getElementById('pay-countdown');
+  const msg=document.getElementById('pay-timer-msg');
+  if(!t||!ring)return;
+  t.textContent=fmtClock(payRemaining);
+  const frac=payRemaining/PAY_DURATION;
+  ring.style.strokeDashoffset=(RING_CIRC*(1-frac)).toFixed(2);
+  let color='#006d37';
+  if(box){box.classList.remove('urgent','expired')}
+  if(payRemaining<=0){
+    color='#ba1a1a';
+    if(box)box.classList.add('expired');
+    if(msg)msg.innerHTML='<strong style="color:#ba1a1a">El tiempo expiró.</strong> Tu reserva pudo liberarse; podés volver a generar el pedido si el stock sigue disponible.';
+  }else if(payRemaining<=120){
+    color='#ba1a1a';
+    if(box)box.classList.add('urgent');
+    if(msg)msg.innerHTML='⚠️ <strong style="color:#ba1a1a">¡Apurate!</strong> Quedan menos de 2 minutos para confirmar la transferencia.';
+  }else if(payRemaining<=300){
+    color='#E67E22';
+  }
+  ring.style.stroke=color;
+  t.style.color=color;
+}
+
+function startPayTimer(){
+  stopPayTimer();
+  payRemaining=PAY_DURATION;
+  renderPayTimer();
+  payTimerInt=setInterval(()=>{
+    payRemaining--;
+    if(payRemaining<=0){
+      payRemaining=0;renderPayTimer();stopPayTimer();return;
+    }
+    renderPayTimer();
+  },1000);
+}
+
+function stopPayTimer(){
+  if(payTimerInt){clearInterval(payTimerInt);payTimerInt=null}
+}
 
 // ========== PAYMENT ==========
 function cpyText(txt,msg){
@@ -999,13 +1352,14 @@ function handleFile(e){
 
 function finalizeOrder(){
   if(!cart.length){showToast('Tu carrito está vacío');return}
+  stopPayTimer();
   const num='#CF-'+Math.floor(1000+Math.random()*9000);
-  const grand=cartTotal()+(cartTotal()>=130000?0:5500);
+  const grand=grandTotal();
   document.getElementById('ord-num').textContent=num;
   document.getElementById('ord-total').textContent=fmt(grand);
   nav('success');
   launchConfetti();
-  setTimeout(()=>{cart=[];saveCart();updateBadges()},1200);
+  setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges()},1200);
 }
 
 function startOver(){nav('catalog');renderProds()}
@@ -1043,9 +1397,23 @@ function toggleMSearch(){
 function toggleMF(){document.getElementById('mfilt').classList.toggle('hidden')}
 
 // ========== INIT ==========
+function initLiveValidation(){
+  const form=document.getElementById('ship-form');
+  if(!form)return;
+  form.querySelectorAll('.inp').forEach(el=>{
+    const handler=()=>{
+      const ok=el.checkValidity()&&el.value.trim()!=='';
+      el.classList.toggle('valid',ok);
+    };
+    el.addEventListener('input',handler);
+    el.addEventListener('change',handler);
+  });
+}
+
 document.addEventListener('DOMContentLoaded',()=>{
   updateBadges();
   renderProds();
+  initLiveValidation();
 });
 </script>
 </body>
