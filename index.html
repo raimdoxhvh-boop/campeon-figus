@@ -1302,13 +1302,35 @@ function cpyText(txt,msg){
   navigator.clipboard.writeText(txt).catch(()=>{}).finally(()=>showToast(msg));
 }
 
+let receiptFile=null;
+const RECEIPT_MAX_BYTES=5*1024*1024;
+const RECEIPT_ALLOWED=['image/jpeg','image/png','image/webp','application/pdf'];
+
 function handleFile(e){
   const f=e.target.files[0];if(!f)return;
+  if(!RECEIPT_ALLOWED.includes(f.type)){
+    showToast('Formato no válido. Usá JPG, PNG, WEBP o PDF');
+    e.target.value='';return;
+  }
+  if(f.size>RECEIPT_MAX_BYTES){
+    showToast('El comprobante supera los 5MB');
+    e.target.value='';return;
+  }
+  receiptFile=f;
   const d=document.getElementById('fname');
   if(d){d.textContent='✅ '+f.name;d.classList.remove('hidden')}
   const z=document.getElementById('upload-zone');
   if(z){z.style.borderColor='#006d37';z.style.background='#f0fdf4'}
   showToast('Comprobante cargado ✓');
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const r=new FileReader();
+    r.onload=()=>resolve(r.result);
+    r.onerror=()=>reject(r.error);
+    r.readAsDataURL(file);
+  });
 }
 
 async function finalizeOrder(){
@@ -1324,6 +1346,13 @@ async function finalizeOrder(){
     promo:appliedPromo,
     subtotal,discount,shipping_cost:shippingCost,total:grand
   };
+  if(receiptFile){
+    try{
+      payload.receipt={name:receiptFile.name,type:receiptFile.type,data:await readFileAsDataURL(receiptFile)};
+    }catch(e){
+      console.error('No se pudo leer el comprobante',e);
+    }
+  }
   let orderNum='#CF-'+Math.floor(1000+Math.random()*9000);
   let orderTotal=grand;
   try{
@@ -1344,7 +1373,7 @@ async function finalizeOrder(){
   document.getElementById('ord-total').textContent=fmt(orderTotal);
   nav('success');
   launchConfetti();
-  setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges();shippingData={}},1200);
+  setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges();shippingData={};receiptFile=null},1200);
 }
 
 function startOver(){nav('catalog');renderProds()}

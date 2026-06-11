@@ -28,7 +28,7 @@ None configured. Verify manually in browser.
 ### Admin panel (`/admin`)
 
 - Dashboard: visits, orders, revenue stats
-- Orders: list, detail, change status (pending / paid / cancelled)
+- Orders: list, detail (incl. payment receipt when attached), change status (pending / paid / cancelled)
 - Visits: log and 7-day chart
 - Products: list, add new, delete
 
