@@ -221,10 +221,13 @@ document.getElementById('login-form').addEventListener('submit', async e=>{
   const err = document.getElementById('login-error');
   err.classList.add('hidden');
   try{
-    const data = await api('/api/admin/login',{
+    const res = await fetch('/api/admin/login',{
       method:'POST',
+      headers:{'Content-Type':'application/json'},
       body:JSON.stringify({password:document.getElementById('login-pass').value})
     });
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok) throw new Error(data.error||'No se pudo iniciar sesión');
     setToken(data.token);
     showApp();
     await refreshAll();

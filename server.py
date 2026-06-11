@@ -9,17 +9,25 @@ import json
 import os
 import random
 import re
-import secrets
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
 
 from flask import Flask, Response, jsonify, request, send_from_directory
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 ROOT = Path(__file__).resolve().parent
 SEED_PATH = ROOT / "data" / "seed_products.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "campeon2026")
+
+# Sesión admin: token firmado (sin estado en memoria) para que funcione en
+# entornos serverless con múltiples instancias (Vercel). La clave de firma se
+# deriva de SECRET_KEY si existe, o de ADMIN_PASSWORD (idéntica en todas las
+# instancias). El token expira a las 12 horas.
+SECRET_KEY = os.environ.get("SECRET_KEY") or ("cf-admin::" + ADMIN_PASSWORD)
+TOKEN_MAX_AGE = 12 * 60 * 60
+_serializer = URLSafeTimedSerializer(SECRET_KEY, salt="campeon-figus-admin")
 
 # Comprobante de pago: tipos permitidos y tamaño máximo (5 MB).
 RECEIPT_ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp", "application/pdf"}
@@ -72,7 +80,6 @@ def _resolve_db_path() -> Path:
 DB_PATH = _resolve_db_path()
 
 app = Flask(__name__, static_folder=str(ROOT), static_url_path="")
-_tokens: dict[str, datetime] = {}
 
 
 def now_iso() -> str:
@@ -183,10 +190,12 @@ def require_admin(f):
         if not auth.startswith("Bearer "):
             return jsonify({"error": "No autorizado"}), 401
         token = auth[7:]
-        expires = _tokens.get(token)
-        if not expires or expires < datetime.now(timezone.utc):
-            _tokens.pop(token, None)
+        try:
+            _serializer.loads(token, max_age=TOKEN_MAX_AGE)
+        except SignatureExpired:
             return jsonify({"error": "Sesión expirada"}), 401
+        except BadSignature:
+            return jsonify({"error": "No autorizado"}), 401
         return f(*args, **kwargs)
 
     return wrapper
@@ -467,17 +476,13 @@ def admin_login():
     data = request.get_json(silent=True) or {}
     if data.get("password") != ADMIN_PASSWORD:
         return jsonify({"error": "Contraseña incorrecta"}), 401
-    token = secrets.token_urlsafe(32)
-    _tokens[token] = datetime.now(timezone.utc) + timedelta(hours=12)
+    token = _serializer.dumps({"admin": True, "ts": now_iso()})
     return jsonify({"token": token})
 
 
 @app.post("/api/admin/logout")
-@require_admin
 def admin_logout():
-    auth = request.headers.get("Authorization", "")
-    if auth.startswith("Bearer "):
-        _tokens.pop(auth[7:], None)
+    # Los tokens son sin estado (firmados); el cliente descarta el suyo.
     return jsonify({"ok": True})
 
 
