@@ -79,6 +79,13 @@ def _resolve_db_path() -> Path:
 
 DB_PATH = _resolve_db_path()
 
+# Persistencia: si TURSO_DATABASE_URL está definida usamos Turso (libSQL) en
+# modo remoto por HTTP, ideal para serverless (Vercel) donde el filesystem es
+# efímero. Si no, caemos a SQLite local para desarrollo.
+TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
+TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN")
+USE_TURSO = bool(TURSO_DATABASE_URL)
+
 app = Flask(__name__, static_folder=str(ROOT), static_url_path="")
 
 
@@ -86,14 +93,104 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def get_db() -> sqlite3.Connection:
+def is_unique_violation(exc: Exception) -> bool:
+    """Detecta una violación de UNIQUE en ambos backends.
+
+    sqlite3 lanza IntegrityError; libsql lanza ValueError con el mensaje
+    'UNIQUE constraint failed'.
+    """
+    return isinstance(exc, sqlite3.IntegrityError) or "UNIQUE constraint failed" in str(exc)
+
+
+class _DictCursor:
+    """Envuelve un cursor de libsql para devolver filas como dict.
+
+    libsql devuelve tuplas planas y no soporta row_factory, así que
+    reproducimos el acceso por nombre que usa el resto del código (row["col"]).
+    """
+
+    def __init__(self, cur):
+        self._cur = cur
+
+    def _cols(self) -> list[str]:
+        return [d[0] for d in (self._cur.description or [])]
+
+    def fetchone(self):
+        row = self._cur.fetchone()
+        return dict(zip(self._cols(), row)) if row is not None else None
+
+    def fetchall(self):
+        cols = self._cols()
+        return [dict(zip(cols, row)) for row in self._cur.fetchall()]
+
+    @property
+    def rowcount(self):
+        return self._cur.rowcount
+
+    @property
+    def lastrowid(self):
+        return self._cur.lastrowid
+
+    @property
+    def description(self):
+        return self._cur.description
+
+
+class _LibsqlConnection:
+    """Adapta una conexión libsql a la interfaz que usa el código (estilo sqlite3)."""
+
+    def __init__(self, conn):
+        self._conn = conn
+
+    def execute(self, sql, params=()):
+        return _DictCursor(self._conn.execute(sql, params))
+
+    def executescript(self, sql):
+        return self._conn.executescript(sql)
+
+    def executemany(self, sql, seq):
+        return self._conn.executemany(sql, seq)
+
+    def commit(self):
+        self._conn.commit()
+
+    def rollback(self):
+        self._conn.rollback()
+
+    def close(self):
+        self._conn.close()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        try:
+            if exc_type is None:
+                self._conn.commit()
+            else:
+                self._conn.rollback()
+        finally:
+            self.close()
+        return False
+
+
+def get_db():
+    if USE_TURSO:
+        import libsql
+
+        kwargs = {}
+        if TURSO_AUTH_TOKEN:
+            kwargs["auth_token"] = TURSO_AUTH_TOKEN
+        conn = libsql.connect(database=TURSO_DATABASE_URL, **kwargs)
+        return _LibsqlConnection(conn)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 
 def init_db() -> None:
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    if not USE_TURSO:
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     with get_db() as conn:
         conn.executescript(
             """
@@ -333,7 +430,9 @@ def create_order():
                     ),
                 )
                 break
-            except sqlite3.IntegrityError:
+            except Exception as exc:
+                if not is_unique_violation(exc):
+                    raise
                 order_number = "#CF-" + str(random.randint(1000, 9999))
         else:
             return jsonify({"error": "No se pudo generar número de pedido"}), 500
@@ -498,7 +597,12 @@ def static_files(filepath: str):
 
 # Inicializa la base al importar el módulo (necesario en entornos serverless
 # como Vercel, donde la app se importa y no se ejecuta el bloque __main__).
-init_db()
+# Un fallo transitorio (p. ej. red hacia Turso en un cold start) no debe tirar
+# todo el módulo: se reintentará en el próximo arranque.
+try:
+    init_db()
+except Exception as exc:  # noqa: BLE001
+    print(f"[init_db] no se pudo inicializar la base al arrancar: {exc}")
 
 
 if __name__ == "__main__":
