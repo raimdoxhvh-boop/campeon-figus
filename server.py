@@ -15,9 +15,26 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 
 ROOT = Path(__file__).resolve().parent
-DB_PATH = ROOT / "data" / "store.db"
 SEED_PATH = ROOT / "data" / "seed_products.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "campeon2026")
+
+
+def _resolve_db_path() -> Path:
+    """Elige una ruta de base escribible.
+
+    En Vercel (y otros entornos serverless) el filesystem del deploy es de
+    solo lectura: únicamente /tmp permite escritura. Usamos DB_PATH si está
+    definido por entorno; si no, /tmp en serverless o data/ en local.
+    """
+    env_path = os.environ.get("DB_PATH")
+    if env_path:
+        return Path(env_path)
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        return Path("/tmp") / "campeon_figus_store.db"
+    return ROOT / "data" / "store.db"
+
+
+DB_PATH = _resolve_db_path()
 
 app = Flask(__name__, static_folder=str(ROOT), static_url_path="")
 _tokens: dict[str, datetime] = {}
@@ -390,8 +407,12 @@ def static_files(filepath: str):
     return jsonify({"error": "No encontrado"}), 404
 
 
+# Inicializa la base al importar el módulo (necesario en entornos serverless
+# como Vercel, donde la app se importa y no se ejecuta el bloque __main__).
+init_db()
+
+
 if __name__ == "__main__":
-    init_db()
     port = int(os.environ.get("PORT", 8080))
     print(f"Campeón Figus server → http://0.0.0.0:{port}")
     print(f"Admin panel → http://0.0.0.0:{port}/admin")
