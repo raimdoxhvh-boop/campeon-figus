@@ -36,7 +36,18 @@ New product images: place files in `catalogo/` and use relative path (e.g. `cata
 
 ### Data
 
-SQLite DB at `data/store.db` (gitignored). Products seed from `data/seed_products.json` on first run.
+By default a local SQLite DB at `data/store.db` (gitignored). Products seed from `data/seed_products.json` on first run.
+
+**Persistent storage (production / Vercel):** Vercel's filesystem is ephemeral (`/tmp`), so orders/receipts/visits would be lost. Set these env vars to use [Turso](https://turso.tech) (libSQL, SQLite-compatible) instead — the app connects remotely over HTTP, no local file:
+
+- `TURSO_DATABASE_URL` (e.g. `libsql://<db>-<org>.turso.io`)
+- `TURSO_AUTH_TOKEN`
+
+When `TURSO_DATABASE_URL` is set, the app uses Turso automatically; otherwise it falls back to local SQLite. Same schema and seeding logic apply to both.
+
+### Admin session / security
+
+Admin sessions use signed stateless tokens (works across Vercel's serverless instances). Set a strong `ADMIN_PASSWORD` (default `campeon2026` is public in the repo) and optionally `SECRET_KEY` to harden token signing.
 
 ### E2E smoke test
 
