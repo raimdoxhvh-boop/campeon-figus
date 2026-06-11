@@ -10,6 +10,8 @@ import os
 import random
 import re
 import sqlite3
+import urllib.error
+import urllib.request
 from datetime import datetime, timedelta, timezone
 from functools import wraps
 from pathlib import Path
@@ -79,12 +81,24 @@ def _resolve_db_path() -> Path:
 
 DB_PATH = _resolve_db_path()
 
-# Persistencia: si TURSO_DATABASE_URL está definida usamos Turso (libSQL) en
-# modo remoto por HTTP, ideal para serverless (Vercel) donde el filesystem es
-# efímero. Si no, caemos a SQLite local para desarrollo.
+# Persistencia: si TURSO_DATABASE_URL está definida usamos Turso (libSQL) a
+# través de su API HTTP (protocolo Hrana), ideal para serverless (Vercel)
+# donde el filesystem es efímero. Se implementa con urllib (Python puro), sin
+# dependencias nativas que puedan fallar en el runtime de Vercel. Si la variable
+# no está, caemos a SQLite local para desarrollo.
 TURSO_DATABASE_URL = os.environ.get("TURSO_DATABASE_URL")
 TURSO_AUTH_TOKEN = os.environ.get("TURSO_AUTH_TOKEN")
 USE_TURSO = bool(TURSO_DATABASE_URL)
+
+
+def _turso_http_url(url: str | None) -> str | None:
+    if not url:
+        return None
+    http = url.replace("libsql://", "https://").replace("wss://", "https://").replace("ws://", "http://")
+    return http.rstrip("/") + "/v2/pipeline"
+
+
+TURSO_HTTP_URL = _turso_http_url(TURSO_DATABASE_URL)
 
 app = Flask(__name__, static_folder=str(ROOT), static_url_path="")
 
@@ -96,93 +110,149 @@ def now_iso() -> str:
 def is_unique_violation(exc: Exception) -> bool:
     """Detecta una violación de UNIQUE en ambos backends.
 
-    sqlite3 lanza IntegrityError; libsql lanza ValueError con el mensaje
+    sqlite3 lanza IntegrityError; Turso devuelve un error cuyo mensaje contiene
     'UNIQUE constraint failed'.
     """
     return isinstance(exc, sqlite3.IntegrityError) or "UNIQUE constraint failed" in str(exc)
 
 
-class _DictCursor:
-    """Envuelve un cursor de libsql para devolver filas como dict.
+class TursoError(Exception):
+    """Error devuelto por el servidor Turso al ejecutar una sentencia."""
 
-    libsql devuelve tuplas planas y no soporta row_factory, así que
-    reproducimos el acceso por nombre que usa el resto del código (row["col"]).
+
+def _to_arg(value):
+    """Convierte un valor de Python al formato tipado del protocolo Hrana."""
+    if value is None:
+        return {"type": "null"}
+    if isinstance(value, bool):
+        return {"type": "integer", "value": str(int(value))}
+    if isinstance(value, int):
+        return {"type": "integer", "value": str(value)}
+    if isinstance(value, float):
+        return {"type": "float", "value": value}
+    if isinstance(value, (bytes, bytearray)):
+        return {"type": "blob", "base64": base64.b64encode(bytes(value)).decode()}
+    return {"type": "text", "value": str(value)}
+
+
+class _Row(dict):
+    """dict con acceso por nombre case-insensitive, como sqlite3.Row.
+
+    Turso/libSQL puede devolver nombres de columna con otra capitalización
+    (p. ej. la columna reservada `desc` vuelve como `DESC`).
     """
 
-    def __init__(self, cur):
-        self._cur = cur
+    def __init__(self, pairs):
+        super().__init__(pairs)
+        self._lower = {k.lower(): k for k in self.keys()}
 
-    def _cols(self) -> list[str]:
-        return [d[0] for d in (self._cur.description or [])]
+    def __getitem__(self, key):
+        if isinstance(key, str) and not super().__contains__(key):
+            real = self._lower.get(key.lower())
+            if real is not None:
+                return super().__getitem__(real)
+        return super().__getitem__(key)
+
+
+def _from_cell(cell):
+    """Convierte una celda tipada de Hrana a un valor de Python."""
+    t = cell.get("type")
+    if t == "null":
+        return None
+    if t == "integer":
+        return int(cell["value"])
+    if t == "float":
+        return float(cell["value"])
+    if t == "blob":
+        return base64.b64decode(cell.get("base64", ""))
+    return cell.get("value")
+
+
+class _TursoCursor:
+    def __init__(self, cols, rows, affected, lastrowid):
+        self._rows = rows
+        self._i = 0
+        self.rowcount = affected if affected is not None else -1
+        self.lastrowid = lastrowid
+        self.description = tuple((c, None, None, None, None, None, None) for c in cols)
 
     def fetchone(self):
-        row = self._cur.fetchone()
-        return dict(zip(self._cols(), row)) if row is not None else None
+        if self._i < len(self._rows):
+            row = self._rows[self._i]
+            self._i += 1
+            return row
+        return None
 
     def fetchall(self):
-        cols = self._cols()
-        return [dict(zip(cols, row)) for row in self._cur.fetchall()]
-
-    @property
-    def rowcount(self):
-        return self._cur.rowcount
-
-    @property
-    def lastrowid(self):
-        return self._cur.lastrowid
-
-    @property
-    def description(self):
-        return self._cur.description
+        rest = self._rows[self._i:]
+        self._i = len(self._rows)
+        return rest
 
 
-class _LibsqlConnection:
-    """Adapta una conexión libsql a la interfaz que usa el código (estilo sqlite3)."""
+class _TursoConnection:
+    """Cliente HTTP mínimo de Turso/libSQL con la interfaz estilo sqlite3 que usa el código."""
 
-    def __init__(self, conn):
-        self._conn = conn
+    def _pipeline(self, statements):
+        reqs = [{"type": "execute", "stmt": s} for s in statements] + [{"type": "close"}]
+        body = json.dumps({"requests": reqs}).encode("utf-8")
+        headers = {"Content-Type": "application/json"}
+        if TURSO_AUTH_TOKEN:
+            headers["Authorization"] = "Bearer " + TURSO_AUTH_TOKEN
+        req = urllib.request.Request(TURSO_HTTP_URL, data=body, headers=headers, method="POST")
+        last_err = None
+        for attempt in range(3):
+            try:
+                with urllib.request.urlopen(req, timeout=30) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except urllib.error.URLError as exc:
+                last_err = exc
+        raise TursoError(f"No se pudo contactar a Turso: {last_err}")
 
     def execute(self, sql, params=()):
-        return _DictCursor(self._conn.execute(sql, params))
+        stmt = {"sql": sql}
+        if params:
+            stmt["args"] = [_to_arg(v) for v in params]
+        out = self._pipeline([stmt])
+        res = out["results"][0]
+        if res.get("type") == "error":
+            raise TursoError(res.get("error", {}).get("message", "Error de Turso"))
+        result = res["response"]["result"]
+        cols = [c["name"] for c in result["cols"]]
+        rows = [_Row(zip(cols, [_from_cell(c) for c in row])) for row in result["rows"]]
+        last = result.get("last_insert_rowid")
+        lastrowid = int(last) if last not in (None, "") else None
+        return _TursoCursor(cols, rows, result.get("affected_row_count"), lastrowid)
 
-    def executescript(self, sql):
-        return self._conn.executescript(sql)
+    def executescript(self, script):
+        for stmt in (s.strip() for s in script.split(";")):
+            if stmt:
+                self.execute(stmt)
+        return self
 
     def executemany(self, sql, seq):
-        return self._conn.executemany(sql, seq)
+        for params in seq:
+            self.execute(sql, params)
+        return self
 
     def commit(self):
-        self._conn.commit()
+        pass
 
     def rollback(self):
-        self._conn.rollback()
+        pass
 
     def close(self):
-        self._conn.close()
+        pass
 
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc, tb):
-        try:
-            if exc_type is None:
-                self._conn.commit()
-            else:
-                self._conn.rollback()
-        finally:
-            self.close()
         return False
 
 
 def get_db():
     if USE_TURSO:
-        import libsql
-
-        kwargs = {}
-        if TURSO_AUTH_TOKEN:
-            kwargs["auth_token"] = TURSO_AUTH_TOKEN
-        conn = libsql.connect(database=TURSO_DATABASE_URL, **kwargs)
-        return _LibsqlConnection(conn)
+        return _TursoConnection()
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
