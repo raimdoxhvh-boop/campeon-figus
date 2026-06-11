@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Campeón Figus - Figuritas Mundial FIFA 2026 | Tienda Oficial</title>
   <meta name="description" content="Comprá tu álbum y figuritas del Mundial FIFA 2026 Panini. Envíos a todo Argentina. Pago por transferencia o tarjeta. Tienda oficial Campeón Figus."/>
+  <!-- Meta Pixel Code -->
+  <script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1669991194321265');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1669991194321265&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""/>
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -791,7 +808,10 @@ function nav(pg){
   if(el){el.classList.add('active');setTimeout(()=>el.classList.add('fade-in'),10)}
   window.scrollTo({top:0,behavior:'smooth'});
   if(pg==='cart'){renderCart()}
-  if(pg==='shipping'){renderShipSummary();setTimeout(initShipMap,120)}
+  if(pg==='shipping'){
+    renderShipSummary();setTimeout(initShipMap,120);
+    fbTrack('InitiateCheckout',{content_ids:cart.map(it=>String(it.id)),content_type:'product',num_items:cart.reduce((s,it)=>s+it.qty,0),value:grandTotal(),currency:'ARS'});
+  }
   if(pg!=='payment')stopPayTimer();
   if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(grandTotal());startPayTimer()}
 }
@@ -950,6 +970,10 @@ function flyToCart(img){
 }
 
 // ========== CART OPERATIONS ==========
+function fbTrack(event,data){
+  try{if(window.fbq)fbq('track',event,data||{})}catch(_){}
+}
+
 function addToCart(id,e){
   const p=PRODUCTS.find(x=>x.id===id);
   if(!p||!p.stock)return;
@@ -957,6 +981,7 @@ function addToCart(id,e){
   if(ex)ex.qty++;
   else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:1});
   saveCart();updateBadges();
+  fbTrack('AddToCart',{content_ids:[String(p.id)],content_name:p.name,content_type:'product',value:p.price,currency:'ARS'});
   if(e&&e.currentTarget){
     const art=e.currentTarget.closest('article');
     const img=art&&art.querySelector('img');
@@ -1241,6 +1266,7 @@ function goToPay(e){
     province:document.getElementById('s-prov').value,
     city:document.getElementById('s-city').value
   };
+  fbTrack('AddPaymentInfo',{content_ids:cart.map(it=>String(it.id)),content_type:'product',num_items:cart.reduce((s,it)=>s+it.qty,0),value:grandTotal(),currency:'ARS'});
   nav('payment');
 }
 
@@ -1371,6 +1397,7 @@ async function finalizeOrder(){
   }
   document.getElementById('ord-num').textContent=orderNum;
   document.getElementById('ord-total').textContent=fmt(orderTotal);
+  fbTrack('Purchase',{content_ids:cart.map(it=>String(it.id)),content_type:'product',contents:cart.map(it=>({id:String(it.id),quantity:it.qty})),num_items:cart.reduce((s,it)=>s+it.qty,0),value:orderTotal,currency:'ARS',order_id:orderNum});
   nav('success');
   launchConfetti();
   setTimeout(()=>{cart=[];appliedPromo=null;localStorage.removeItem('cf-promo');saveCart();updateBadges();shippingData={};receiptFile=null},1200);
