@@ -35,7 +35,12 @@ def product_link(base: str, product_id: int) -> str:
 
 def image_link(base: str, img_path: str) -> str:
     base = base.rstrip("/")
-    path = img_path.lstrip("/")
+    meta = Path(img_path)
+    jpg = f"catalogo/meta/{meta.stem}.jpg"
+    if (ROOT / jpg).is_file():
+        path = jpg
+    else:
+        path = img_path.lstrip("/")
     return f"{base}/{path}"
 
 

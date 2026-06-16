@@ -6,6 +6,7 @@ from __future__ import annotations
 import base64
 import binascii
 import json
+import mimetypes
 import os
 import random
 import re
@@ -669,7 +670,8 @@ def static_files(filepath: str):
         return jsonify({"error": "No encontrado"}), 404
     target = ROOT / filepath
     if target.is_file():
-        return send_from_directory(ROOT, filepath)
+        mimetype, _ = mimetypes.guess_type(filepath)
+        return send_from_directory(ROOT, filepath, mimetype=mimetype)
     return jsonify({"error": "No encontrado"}), 404
 
 
