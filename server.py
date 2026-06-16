@@ -309,30 +309,38 @@ def init_db() -> None:
         for col in ("receipt_data", "receipt_name", "receipt_mime"):
             if col not in existing_cols:
                 conn.execute(f"ALTER TABLE orders ADD COLUMN {col} TEXT")
-        count = conn.execute("SELECT COUNT(*) AS c FROM products").fetchone()["c"]
-        if count == 0 and SEED_PATH.exists():
-            products = json.loads(SEED_PATH.read_text(encoding="utf-8"))
-            for p in products:
-                conn.execute(
-                    """
-                    INSERT INTO products
-                    (id, name, cat, img, price, badge, badge_color, stock, desc, highlight, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    """,
-                    (
-                        p["id"],
-                        p["name"],
-                        p["cat"],
-                        p["img"],
-                        p["price"],
-                        p.get("badge"),
-                        p.get("badgeColor", ""),
-                        1 if p.get("stock", True) else 0,
-                        p.get("desc", ""),
-                        1 if p.get("highlight") else 0,
-                        now_iso(),
-                    ),
-                )
+        sync_seed_products(conn)
+
+
+def sync_seed_products(conn) -> None:
+    """Inserta productos del seed que aún no existen en la base (por id)."""
+    if not SEED_PATH.exists():
+        return
+    products = json.loads(SEED_PATH.read_text(encoding="utf-8"))
+    existing_ids = {r["id"] for r in conn.execute("SELECT id FROM products").fetchall()}
+    for p in products:
+        if p["id"] in existing_ids:
+            continue
+        conn.execute(
+            """
+            INSERT INTO products
+            (id, name, cat, img, price, badge, badge_color, stock, desc, highlight, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                p["id"],
+                p["name"],
+                p["cat"],
+                p["img"],
+                p["price"],
+                p.get("badge"),
+                p.get("badgeColor", ""),
+                1 if p.get("stock", True) else 0,
+                p.get("desc", ""),
+                1 if p.get("highlight") else 0,
+                now_iso(),
+            ),
+        )
 
 
 def row_to_product(row: sqlite3.Row) -> dict:
