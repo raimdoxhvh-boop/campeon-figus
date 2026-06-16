@@ -454,5 +454,17 @@
     "stock": true,
     "desc": "8 sobres para el finde largo. 56 figuritas oficiales. Oferta especial de fin de semana.",
     "highlight": false
+  },
+  {
+    "id": 39,
+    "name": "Box Maleta Premium FIFA World Cup 2026",
+    "cat": "combos",
+    "img": "catalogo/album_tapa_dura-sobres.webp",
+    "price": 99999,
+    "badge": "💼 MALETA PREMIUM",
+    "badgeColor": "bg-trophy-gold text-on-background",
+    "stock": true,
+    "desc": "Edición coleccionista oficial PANINI. Incluye álbum tapa dura del Mundial 2026 + 30 sobres (210 figuritas) en maleta rígida premium de exhibición. Ideal para regalo o guardar tu colección.",
+    "highlight": true
   }
 ]
