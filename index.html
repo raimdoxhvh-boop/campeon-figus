@@ -70,7 +70,7 @@
     .gold-card{position:relative;overflow:hidden;border:2px solid #FFF200}
     .gold-card::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;
       background:linear-gradient(to right,transparent,rgba(255,242,0,.35),transparent);
-      transform:skewX(-20deg);animation:gshimmer 2.6s infinite}
+      transform:skewX(-20deg);animation:gshimmer 2.6s infinite;pointer-events:none}
     @keyframes gshimmer{100%{left:200%}}
 
     /* Progress bar shimmer */
@@ -866,7 +866,7 @@ function renderProds(){
   empty.classList.add('hidden');
 
   grid.innerHTML=items.map(p=>`
-    <article class="bg-clean-white rounded-xl p-4 prod-card flex flex-col h-full relative c-border ${p.highlight?'gold-card':''} cursor-pointer" onclick="">
+    <article class="bg-clean-white rounded-xl p-4 prod-card flex flex-col h-full relative c-border ${p.highlight?'gold-card':''} ${p.stock?'cursor-pointer':''}" ${p.stock?`onclick="addToCart(${p.id},event)"`:''}>
       ${p.badge?`<div class="absolute top-2 left-2 z-10"><span class="${p.badgeColor} text-xs px-2 py-0.5 rounded-sm uppercase" style="font-family:'Lexend',sans-serif;font-weight:700;font-size:10px;letter-spacing:.04em">${p.badge}</span></div>`:''}
       <div class="aspect-square bg-surface-container-low rounded-lg mb-3 overflow-hidden flex items-center justify-center p-2 ${!p.stock?'opacity-50 grayscale':''}">
         <img src="${p.img}" alt="${p.name}" class="prod-img max-h-full max-w-full object-contain" loading="lazy"/>
