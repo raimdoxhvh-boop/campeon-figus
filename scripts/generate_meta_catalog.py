@@ -98,7 +98,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Generar CSV de catálogo para Meta")
     parser.add_argument(
         "--base-url",
-        default=os.environ.get("STORE_URL", "https://TU-TIENDA.vercel.app"),
+        default=os.environ.get("STORE_URL", "https://mundialpaniniarg.shop"),
         help="URL pública de la tienda (sin barra final). Env: STORE_URL",
     )
     parser.add_argument(
