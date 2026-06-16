@@ -390,6 +390,23 @@
 
 
 <!-- ================================================================ -->
+<!-- ======================= DETALLE PRODUCTO ======================= -->
+<!-- ================================================================ -->
+<div id="pg-product" class="pg fade-in">
+  <main class="max-w-screen-xl mx-auto px-4 md:px-12 py-6 md:py-10 mb-24 md:mb-0">
+    <button onclick="closeProduct()" class="text-primary text-sm font-semibold flex items-center gap-1 hover:underline mb-6" style="font-family:'Lexend',sans-serif">
+      <span class="material-symbols-outlined" style="font-size:18px">arrow_back</span> Volver al catálogo
+    </button>
+    <div id="pd-content"></div>
+    <section id="pd-related-wrap" class="mt-12 hidden">
+      <h2 style="font-family:'Lexend',sans-serif;font-size:20px;font-weight:900" class="text-on-background mb-5">También te puede interesar</h2>
+      <div id="pd-related" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    </section>
+  </main>
+</div>
+
+
+<!-- ================================================================ -->
 <!-- =========================== CARRITO ============================ -->
 <!-- ================================================================ -->
 <div id="pg-cart" class="pg fade-in">
@@ -802,6 +819,9 @@ function cartCount(){return cart.reduce((s,i)=>s+i.qty,0)}
 function fmt(n){return '$'+n.toLocaleString('es-AR')}
 
 // ========== NAVIGATION ==========
+let currentProductId=null;
+let pdQty=1;
+
 function nav(pg){
   document.querySelectorAll('.pg').forEach(e=>{e.classList.remove('active');e.classList.remove('fade-in')});
   const el=document.getElementById('pg-'+pg);
@@ -814,6 +834,102 @@ function nav(pg){
   }
   if(pg!=='payment')stopPayTimer();
   if(pg==='payment'){document.getElementById('pay-total').textContent=fmt(grandTotal());startPayTimer()}
+  if(pg!=='product'){
+    currentProductId=null;
+    if(location.hash.startsWith('#/product/'))history.replaceState({page:'catalog'},'',location.pathname);
+  }
+}
+
+function openProduct(id,skipHistory){
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p)return;
+  currentProductId=id;
+  pdQty=1;
+  renderProductDetail(p);
+  nav('product');
+  if(!skipHistory)history.pushState({page:'product',id},'',location.pathname+'#/product/'+id);
+  fbTrack('ViewContent',{content_ids:[String(id)],content_name:p.name,content_type:'product',value:p.price,currency:'ARS'});
+}
+
+function closeProduct(){
+  nav('catalog');
+  history.pushState({page:'catalog'},'',location.pathname);
+}
+
+function chgPdQty(d){
+  pdQty=Math.max(1,pdQty+d);
+  const el=document.getElementById('pd-qty');
+  if(el)el.textContent=pdQty;
+}
+
+function renderProductDetail(p){
+  const box=document.getElementById('pd-content');
+  if(!box)return;
+  box.innerHTML=`
+    <div class="flex flex-col md:flex-row gap-8 md:gap-12">
+      <div class="w-full md:w-1/2 flex-shrink-0">
+        <div class="aspect-square bg-clean-white rounded-xl c-border s-shadow p-6 flex items-center justify-center relative ${p.highlight?'gold-card':''} ${!p.stock?'opacity-60':''}">
+          ${p.badge?`<div class="absolute top-3 left-3 z-10"><span class="${p.badgeColor} text-xs px-2.5 py-1 rounded-sm uppercase" style="font-family:'Lexend',sans-serif;font-weight:700;font-size:11px;letter-spacing:.04em">${p.badge}</span></div>`:''}
+          <img src="${p.img}" alt="${p.name}" class="max-h-full max-w-full object-contain ${!p.stock?'grayscale':''}"/>
+        </div>
+      </div>
+      <div class="flex-grow flex flex-col gap-4">
+        <p style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:700;color:#6d7a6e;text-transform:uppercase;letter-spacing:.08em">${getCatLabel(p.cat)}</p>
+        <h1 style="font-family:'Lexend',sans-serif;font-size:clamp(22px,4vw,32px);font-weight:900;line-height:1.15" class="text-on-background">${p.name}</h1>
+        <p class="text-on-surface-variant text-base leading-relaxed">${p.desc}</p>
+        <div class="flex items-center gap-3 py-2">
+          <span style="font-family:'Lexend',sans-serif;font-size:13px;font-weight:700;color:${p.stock?'#006d37':'#ba1a1a'}">${p.stock?'✓ En Stock':'✗ Sin Stock'}</span>
+          ${p.highlight?'<span style="background:#FFF200;color:#181b23;font-family:\'Lexend\',sans-serif;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px">Destacado</span>':''}
+        </div>
+        <div class="py-2">
+          <span style="font-family:'Lexend',sans-serif;font-size:clamp(28px,5vw,36px);font-weight:900;color:#0D6B48">${fmt(p.price)}</span>
+          <span class="text-outline text-sm ml-1">ARS</span>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+          ${p.stock?`
+          <div class="flex items-center border-2 border-outline-variant rounded-xl overflow-hidden bg-surface-container-lowest self-start">
+            <button onclick="chgPdQty(-1)" class="qbtn w-11 h-11 flex items-center justify-center hover:bg-surface-container font-bold text-xl">−</button>
+            <span id="pd-qty" style="font-family:'Lexend',sans-serif;font-weight:800;font-size:16px" class="w-12 text-center border-x-2 border-outline-variant py-2">1</span>
+            <button onclick="chgPdQty(1)" class="qbtn w-11 h-11 flex items-center justify-center hover:bg-surface-container font-bold text-xl">+</button>
+          </div>
+          <button onclick="addToCart(${p.id},event,pdQty)" class="flex-grow bg-trophy-gold text-on-background s-border s-shadow rounded-xl py-3.5 px-6 flex items-center justify-center gap-2 hover:-translate-y-0.5 transition-all" style="font-family:'Lexend',sans-serif;font-size:15px;font-weight:900">
+            <span class="material-symbols-outlined mso-fill" style="font-size:22px">add_shopping_cart</span> Agregar al carrito
+          </button>`:`
+          <button disabled class="w-full rounded-xl py-3.5 px-6 cursor-not-allowed" style="background:#e0e2ed;color:#6d7a6e;border:2px solid #bccabc;font-family:'Lexend',sans-serif;font-size:15px;font-weight:800">Producto sin stock</button>`}
+        </div>
+        <div class="mt-4 pt-4 border-t border-surface-variant grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+          <div class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined mso-fill text-pitch-green" style="font-size:20px">local_shipping</span> Envío a todo el país</div>
+          <div class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined mso-fill text-pitch-green" style="font-size:20px">verified_user</span> Producto oficial Panini</div>
+          <div class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined mso-fill text-pitch-green" style="font-size:20px">autorenew</span> 30 días de cambio</div>
+        </div>
+      </div>
+    </div>`;
+
+  const related=PRODUCTS.filter(x=>x.id!==p.id&&x.cat===p.cat).slice(0,4);
+  const rw=document.getElementById('pd-related-wrap');
+  const rg=document.getElementById('pd-related');
+  if(!related.length){if(rw)rw.classList.add('hidden');return}
+  if(rw)rw.classList.remove('hidden');
+  if(rg)rg.innerHTML=related.map(r=>`
+    <article class="bg-clean-white rounded-xl p-3 prod-card flex flex-col h-full c-border cursor-pointer" onclick="openProduct(${r.id})">
+      <div class="aspect-square bg-surface-container-low rounded-lg mb-2 overflow-hidden flex items-center justify-center p-2">
+        <img src="${r.img}" alt="${r.name}" class="prod-img max-h-full max-w-full object-contain" loading="lazy"/>
+      </div>
+      <h3 style="font-family:'Lexend',sans-serif;font-size:12px;font-weight:800;line-height:1.25" class="text-on-background line-clamp-2 mb-1">${r.name}</h3>
+      <span style="font-family:'Lexend',sans-serif;font-size:14px;font-weight:900;color:#0D6B48">${fmt(r.price)}</span>
+    </article>`).join('');
+}
+
+function routeFromHash(){
+  const m=location.hash.match(/^#\/product\/(\d+)$/);
+  if(m){
+    const id=parseInt(m[1],10);
+    const open=()=>openProduct(id,true);
+    if(PRODUCTS.length)open();
+    else loadProducts().then(open);
+    return;
+  }
+  if(document.getElementById('pg-product')?.classList.contains('active'))nav('catalog');
 }
 
 // ========== PRODUCTS ==========
@@ -866,7 +982,7 @@ function renderProds(){
   empty.classList.add('hidden');
 
   grid.innerHTML=items.map(p=>`
-    <article class="bg-clean-white rounded-xl p-4 prod-card flex flex-col h-full relative c-border ${p.highlight?'gold-card':''} ${p.stock?'cursor-pointer':''}" ${p.stock?`onclick="addToCart(${p.id},event)"`:''}>
+    <article class="bg-clean-white rounded-xl p-4 prod-card flex flex-col h-full relative c-border ${p.highlight?'gold-card':''} cursor-pointer" onclick="openProduct(${p.id})">
       ${p.badge?`<div class="absolute top-2 left-2 z-10"><span class="${p.badgeColor} text-xs px-2 py-0.5 rounded-sm uppercase" style="font-family:'Lexend',sans-serif;font-weight:700;font-size:10px;letter-spacing:.04em">${p.badge}</span></div>`:''}
       <div class="aspect-square bg-surface-container-low rounded-lg mb-3 overflow-hidden flex items-center justify-center p-2 ${!p.stock?'opacity-50 grayscale':''}">
         <img src="${p.img}" alt="${p.name}" class="prod-img max-h-full max-w-full object-contain" loading="lazy"/>
@@ -974,20 +1090,21 @@ function fbTrack(event,data){
   try{if(window.fbq)fbq('track',event,data||{})}catch(_){}
 }
 
-function addToCart(id,e){
+function addToCart(id,e,qty=1){
   const p=PRODUCTS.find(x=>x.id===id);
   if(!p||!p.stock)return;
+  const n=Math.max(1,parseInt(qty,10)||1);
   const ex=cart.find(x=>x.id===id);
-  if(ex)ex.qty++;
-  else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:1});
+  if(ex)ex.qty+=n;
+  else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:n});
   saveCart();updateBadges();
-  fbTrack('AddToCart',{content_ids:[String(p.id)],content_name:p.name,content_type:'product',value:p.price,currency:'ARS'});
+  fbTrack('AddToCart',{content_ids:[String(p.id)],content_name:p.name,content_type:'product',value:p.price*n,currency:'ARS'});
   if(e&&e.currentTarget){
-    const art=e.currentTarget.closest('article');
-    const img=art&&art.querySelector('img');
+    const root=e.currentTarget.closest('article')||document.getElementById('pd-content');
+    const img=root&&root.querySelector('img');
     if(img)flyToCart(img);else bumpBadges();
   }else bumpBadges();
-  showToast('✅ Agregado: '+p.name);
+  showToast(n>1?`✅ ${n}× agregados: ${p.name}`:'✅ Agregado: '+p.name);
 }
 
 function rmFromCart(id){
@@ -1454,8 +1571,10 @@ function initLiveValidation(){
 document.addEventListener('DOMContentLoaded',()=>{
   updateBadges();
   trackVisit();
-  loadProducts();
+  loadProducts().then(()=>routeFromHash());
   initLiveValidation();
+  window.addEventListener('popstate',routeFromHash);
+  window.addEventListener('hashchange',routeFromHash);
 });
 </script>
 </body>
